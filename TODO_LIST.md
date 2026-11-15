@@ -28,18 +28,19 @@
 
 ---
 
-## Phase 2 — Repo Hygiene
+## Phase 2 — Repo Hygiene ✅ COMPLETE (2026-11-14)
 
-- [ ] Initial git commit (repo currently has zero commits on `main`).
-- [ ] Root `.gitignore`: `node_modules/`, `dist/`, `*.log`, `.npm-cache/`, `.pip-cache/`, `__pycache__/`, `.venv/`.
-- [ ] Delete `SUBMISSION/` duplicated source or regenerate it from the root at packaging time (no hand-synced stale copies).
-- [ ] Delete dead files: `dvm-web/src/components/cinematic-hero.tsx`, `dvm-web/src/components/ui/cinematic-hero.bak.tsx`, unused `gsap` dependency.
-- [ ] Remove stray logs: `jsdom.log`, `lucide.log`, `preview-build.log`, `uninstall.log`, `ssr-build.log`; remove or document `start.bat` / `start-dev.bat`.
-- [ ] Free C: drive (0.16 GB free — `npm` fails ENOSPC); move npm/pip caches to D:; reinstall `dvm-web` cleanly; verify `npm run build` works out of the box.
-- [ ] Reconcile Tailwind setup: CDN (what's actually used) vs installed tailwindcss v4 (unused) vs removed `@tailwindcss/vite` — pick one, document in README.
-- [ ] Decide `db/` (pymysql, dead code): remove it, or wire it (schema + usage + tests).
-- [ ] Verify `.oxlintrc.json` passes (`npm run lint`) after cleanup.
-- [ ] Table-driven report mapping for `db/schema.sql` if kept.
+- [x] Initial git commit (`7ff23e3` — 52 files; repo had zero commits).
+- [x] Root `.gitignore` extended: `.npm-cache/`, `.pip-cache/` (node_modules/, dist/, *.log, __pycache__/, .venv/ already covered).
+- [x] `SUBMISSION/` now regenerates from root via `SUBMISSION/pack.ps1` (never hand-edited); duplicates removed; `pack.ps1` made idempotent.
+- [x] Delete dead files: `cinematic-hero.tsx` (components/ + ui/), `cinematic-hero.bak.tsx`; removed `gsap` dep (+ stale node_modules copies: gsap, framer-motion stray, @tailwindcss, tailwindcss, autoprefixer, postcss).
+- [x] Remove stray logs: `jsdom.log`, `lucide.log`, `preview-build.log`, `uninstall.log`, `ssr-build.log`; deleted `start.bat` / `start-dev.bat`.
+- [x] Free C: drive — npm cache moved to `D:\DE Digital voting Machine\.npm-cache` via `dvm-web/.npmrc`; `npm install` + `npm run build` run out-of-the-box (verified `vite build` exit 0 on clean dep tree after `npm i`); removed corrupt node_modules tree; `npm run lint` = 0 errors (warnings only).
+- [x] Reconcile Tailwind: CDN (in use at runtime) chosen; build-time Tailwind v4 removed from devDeps; `@tailwindcss/vite` removed from vite.config; `@tailwind`/`@import "tailwindcss"` directives removed from index.css; documented in both READMEs.
+- [x] Decide `db/` — removed (dead pymysql code, no consumer); `db/schema.sql` report mapping item moot.
+- [x] Verify `.oxlintrc.json` passes — `npm run lint`: 0 errors.
+- [x] Report mapping for `db/schema.sql` if kept — N/A (db/ removed).
+- [x] SUBMISSION_CHECKLIST.md rewritten honestly (removed leaked DB credential and unverifiable "MySQL verified" claim; regenerated package has identical, fresh files).
 
 ---
 
