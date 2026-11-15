@@ -1,0 +1,158 @@
+/* ═══════════════════════════════════════════════════════════
+   DVM-900 — paper civic design system
+   Tailwind is provided at RUNTIME via CDN in index.html — no build-time pipeline needed.
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  --ink: #1e1b17;
+  --paper: #fff8f3;
+}
+
+html { font-size: 108.5%; } /* global text-size bump (~+8.5%) */
+
+html, body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Work Sans', sans-serif;
+  margin: 0; padding: 0;
+  overflow-x: hidden;
+}
+
+.font-serif-civic { font-family: 'Newsreader', serif; }
+.font-mono-civic  { font-family: 'Space Mono', monospace; }
+
+/* ── Paper grain / dotted register grid ─────────── */
+.dot-grid {
+  background-image: radial-gradient(#1e1b17 1px, transparent 1px);
+  background-size: 10px 10px;
+  opacity: 0.045;
+  pointer-events: none;
+}
+
+/* ── Registration crosshair marks ─────────────────── */
+.reg-cross::before { content: '+'; margin-right: 6px; }
+
+/* ── Paper notch (punch hole) ───────────────────── */
+.paper-notch {
+  position: absolute; top: -12px; width: 24px; height: 24px; border-radius: 9999px;
+  background: var(--paper); box-shadow: inset 0 2px 3px rgba(0,0,0,0.18);
+}
+
+/* ── Perforation tear line ───────────────────────── */
+.perforation {
+  border-top: 2px dashed rgba(30,27,23,0.45);
+}
+
+/* ── Hard offset shadow pressables ───────────────── */
+.btn-physical {
+  font-family: 'Space Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  border: 2px solid var(--ink);
+  border-radius: 0.125rem;
+  box-shadow: 2px 2px 0px var(--ink);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.btn-physical:hover { transform: translate(1px, 1px); box-shadow: 1px 1px 0px var(--ink); }
+.btn-physical:active { transform: translate(2px, 2px); box-shadow: 0 0 0 var(--ink); }
+
+/* ── Rubber-stamp double-ring ────────────────────── */
+.stamp-double {
+  border: 3px double #b51d04;
+  border-radius: 0.25rem;
+  color: #b51d04;
+}
+
+/* ── Focus visibility ───────────────────────────── */
+:focus-visible { outline: 3px solid #b51d04; outline-offset: 2px; }
+
+/* ── Buttons (print-craft) ───────────────────────── */
+.btn-primary  { background: #d9381e; color: #fffcff; border: 2px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); }
+.btn-primary:hover { background: #b51d04; }
+.btn-teal     { background: #2b676c; color: #fff; border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+.btn-ghost    { background: #efe7e0; color: var(--ink); border: 2px solid var(--ink); box-shadow: 2px 2px 0 var(--ink); }
+.btn-ink      { background: var(--ink); color: var(--paper); border: 2px solid var(--ink); }
+
+/* ── Ticker seam (registration bar) ─────────────── */
+.seam-dots { letter-spacing: 0.35em; }
+
+/* ── Skip link ───────────────────────────────────── */
+.skip-link {
+  position: absolute; left: -9999px; top: 0; z-index: 100;
+  padding: 10px 18px; background: #b51d04; color: #fff;
+  font-family: 'Space Mono', monospace; text-transform: uppercase;
+  letter-spacing: 0.12em; font-weight: 700; font-size: 13px; text-decoration: none;
+}
+.skip-link:focus-visible { left: 0; outline: 3px solid #fde25b; }
+
+/* ── Print ───────────────────────────────────────── */
+.print-only { display: none; }
+@media print {
+  .no-print { display: none !important; }
+  header, footer, #scroll-progress, .dot-grid { display: none !important; }
+  .print-only { display: block !important; }
+  body, #root { background: #fff; color: #000; }
+  main { padding: 0 !important; }
+}
+
+/* ── Dark mode: dimmed print / sepia night ───────── */
+.dark { color-scheme: dark; }
+.dark body { background: #241f1a; color: #ece5dc; }
+.dark .bg-surface, .dark .bg-background { background-color: #241f1a !important; }
+.dark .bg-surface-container { background-color: #2e2823 !important; }
+.dark .bg-surface-container-low { background-color: #2a2420 !important; }
+.dark .bg-surface-container-high { background-color: #332c26 !important; }
+.dark .bg-surface-container-highest { background-color: #3b332c !important; }
+.dark .bg-surface-container-lowest { background-color: #332c26 !important; }
+.dark .bg-surface-variant { background-color: #3b332c !important; }
+.dark .bg-surface-dim { background-color: #453c34 !important; }
+.dark .bg-surface-container-low\/60 { background-color: rgba(42,36,32,0.6) !important; }
+.dark .text-on-surface, .dark .text-on-background { color: #f5eee6 !important; }
+.dark .text-on-surface-variant { color: #d3c7ba !important; }
+.dark .text-outline { color: #b3a595 !important; }
+.dark .text-secondary { color: #8fd3da !important; }
+.dark .text-primary { color: #ff8f6d !important; }
+.dark .text-primary-container { color: #ffb59f !important; }
+.dark .text-secondary-container { color: #afeaef !important; }
+.dark .text-tertiary { color: #e8d94a !important; }
+.dark .text-tertiary-fixed-dim { color: #e8d94a !important; }
+.dark .text-error { color: #ffb4ab !important; }
+.dark .text-on-error-container { color: #ffdad6 !important; }
+.dark .bg-error-container { background-color: #5c1e1a !important; }
+.dark .bg-primary-container { background-color: #b52a12 !important; }
+.dark .bg-primary { background-color: #c73f1c !important; }
+.dark .bg-secondary { background-color: #1f4f53 !important; }
+.dark .border-on-surface { border-color: #6b6157 !important; }
+.dark .border-on-surface\/40 { border-color: rgba(107,97,87,0.55) !important; }
+.dark .border-on-surface\/25 { border-color: rgba(107,97,87,0.35) !important; }
+.dark .border-on-surface\/20 { border-color: rgba(107,97,87,0.3) !important; }
+.dark .border-on-surface\/60 { border-color: rgba(107,97,87,0.7) !important; }
+.dark .border-outline { border-color: rgba(107,97,87,0.7) !important; }
+.dark .border-outline-variant { border-color: #574e45 !important; }
+.dark .outline-variant { border-color: #574e45 !important; }
+.dark .paper-notch { background: #241f1a; }
+.dark .btn-primary, .dark .btn-teal, .dark .btn-ghost, .dark .btn-ink, .dark .btn-physical { box-shadow-color: #000 !important; }
+.dark .seam-dots, .dark .text-on-surface-variant { color: #d3c7ba !important; }
+.dark .bg-surface-container-low .text-on-surface-variant, .dark .bg-surface-container .text-on-surface-variant { color: #d3c7ba !important; }
+.dark .placeholder-on-surface-variant, .dark input::placeholder { color: #b8aca1 !important; }
+.dark .field { background: #2a2420; color: #f5eee6; border-color: #574e45; }
+
+/* ── Form fields ─────────────────────────────────── */
+.field {
+  width: 100%; background: #ffffff; border: 2px solid #907069;
+  border-radius: 0.125rem; padding: 8px 10px;
+  font-family: 'Space Mono', monospace; font-size: 13px; color: #1e1b17;
+}
+.field:focus { outline: none; border-color: #b51d04; box-shadow: 0 0 0 3px rgba(181,29,4,0.2); }
+.field-error { border-color: #ba1a1a !important; box-shadow: 0 0 0 3px rgba(186,26,26,0.25) !important; }
+.dark .field { background: #2a2420; color: #ece5dc; border-color: #4a423b; }
+
+/* ── Blink dot ───────────────────────────────────── */
+@keyframes blink-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.2; } }
+.animate-blink { animation: blink-dot 1.3s steps(2, start) infinite; }
+
+/* ── Focus rings must be obvious on paper ────────── */
+:focus-visible { outline: 3px solid #b51d04; outline-offset: 2px; }
+
+.dark .text-surface { color: #241f1a !important; }

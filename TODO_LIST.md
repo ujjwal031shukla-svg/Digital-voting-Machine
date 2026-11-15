@@ -1,0 +1,102 @@
+# DVM — Digital Voting Machine · To-Do List
+
+**Date written:** 2026-11-14
+**Status:** Fresh list — all previously tracked outstanding items deleted per user request.
+**Scope note:** This is an educational simulation, not a certified voting machine. Replace any wording implying otherwise with the disclaimer below.
+
+> Educational simulation — not for real elections.
+
+---
+
+## Phase 1 — Honesty & Report Integrity ✅ COMPLETE (2026-11-14)
+
+- [x] Remove or re-caption security-theater strings with "Educational simulation — not for real elections":
+  - "FEDERAL ELECTIONS COMMISSION · SECURE BALLOT INTEGRITY ACCREDITED" → "DVM-900 COURSE SIMULATION · NOT FOR OFFICIAL ELECTIONS"
+  - "SERIAL DVM-88420-XF" → "SERIAL DVM-SIM-000"; "SEAL #8841-B" + copy button → "SEAL #SIM-000 (FICTIONAL)"
+  - "BAY 01/02 READY" → "SIM UNIT · BAY 01 READY"; "TAMPER OK" → "SIM: TAMPER OK"; "PRECINCT 14-B" → "PRECINCT 14-B (FICTIONAL)"
+  - "Solenoid 4.2N nominal", "Geneva flip-counter", "HSM-2", "SEALED", "CERTIFICATE #701-X" → all captioned as SIM (or deleted)
+  - Diagnostics boot log and self-test lines prefixed `[SIM BOOT]` / `[SIM TEST]` / `[SIM DONE]`
+  - "Hardware self-test complete" → "Simulated self-test complete"
+  - Stale `dvm-web\ssr-dist\ssr-entry.js` artifact (contained heavier theater: "Geneva flip-counters rotate one decade") → deleted
+- [x] Replace dvm-web `README.md` (was default Vite template) with real project README (setup/build/honesty).
+- [x] Root README rewritten: scope disclaimer up top, accurate features, accurate deps, honest scope.
+- [x] Report: "Security Limitations" consolidated in Section 6 (Residual Risks rewritten to current reality incl. document-upload file-identity-only limit and client-side enforcement); stale "no voter authentication" claim corrected.
+- [x] Known Issues + Assumptions sections retained (already present, K-3 updated context).
+- [x] Student placeholder fields — intentionally left as bracketed placeholders for the student to fill (not ours to invent).
+- [x] Sync report claims: title-page Status → "NOT for real elections"; report disclaimer banner added; "production-ready" removed (incl. Section 5 heading and embedded listing header); HOWTO_RUN/Appendix A wording kept honest; stale "plaintext JSON" note corrected to AES-GCM (with the key kept on the same device).
+- [x] Disclaimer visible in UI footer: "DVM-900 COURSE SIMULATION · NOT FOR OFFICIAL ELECTIONS"
+
+---
+
+## Phase 2 — Repo Hygiene
+
+- [ ] Initial git commit (repo currently has zero commits on `main`).
+- [ ] Root `.gitignore`: `node_modules/`, `dist/`, `*.log`, `.npm-cache/`, `.pip-cache/`, `__pycache__/`, `.venv/`.
+- [ ] Delete `SUBMISSION/` duplicated source or regenerate it from the root at packaging time (no hand-synced stale copies).
+- [ ] Delete dead files: `dvm-web/src/components/cinematic-hero.tsx`, `dvm-web/src/components/ui/cinematic-hero.bak.tsx`, unused `gsap` dependency.
+- [ ] Remove stray logs: `jsdom.log`, `lucide.log`, `preview-build.log`, `uninstall.log`, `ssr-build.log`; remove or document `start.bat` / `start-dev.bat`.
+- [ ] Free C: drive (0.16 GB free — `npm` fails ENOSPC); move npm/pip caches to D:; reinstall `dvm-web` cleanly; verify `npm run build` works out of the box.
+- [ ] Reconcile Tailwind setup: CDN (what's actually used) vs installed tailwindcss v4 (unused) vs removed `@tailwindcss/vite` — pick one, document in README.
+- [ ] Decide `db/` (pymysql, dead code): remove it, or wire it (schema + usage + tests).
+- [ ] Verify `.oxlintrc.json` passes (`npm run lint`) after cleanup.
+- [ ] Table-driven report mapping for `db/schema.sql` if kept.
+
+---
+
+## Phase 3 — React Test Coverage
+
+- [ ] Set up test runner: Vitest + Testing Library (or Playwright) + `npm test` script.
+- [ ] FSM smoke tests:
+  - IDLE → READY (officer PIN arm)
+  - READY → VOTED (cast ballot)
+  - VOTED → auto-IDLE (5s) and VOTED → LOCKED
+  - LOCKED → RESULT (officer PIN) and RESULT → IDLE
+  - Double-vote blocked across refresh (`voterHasVoted` persisted)
+  - Officer PIN 3-attempt → 30s lockout persisted
+  - Voter-ID gate blocks ballot until VERIFY succeeds
+  - Document-upload gate blocks ballot until ID doc accepted
+  - Vote tally survives reload (AES-GCM localStorage round-trip)
+- [ ] Document test command and expected coverage in README.
+
+---
+
+## Phase 4 — Voter/Officer UX
+
+- [ ] Split voter and officer flows: voters → EPIC + document verify → cast ballot; officer PIN arms the machine / opens officer drawer; reword CTAs so a voter never appears to need officer sign-in.
+- [ ] One-time accessible CTA audit: focus traps in modals, labelled controls, keyboard-only FSM navigation, ≥16px base font for interactive elements, visible focus states, name/role/aria on icon-only controls.
+- [ ] Consistent type scale across ballot console, audit stub, header, footer, step panels — remove one-off `text-[…px]` overrides.
+- [ ] Verify dark-mode rendering of every component touched on this list (background-paths, landing, console).
+
+---
+
+## Phase 5 — Demo & Submission
+
+- [ ] Demo video + script (officer arms ballot; voter verifies EPIC + uploads ID; casts; shows RESULTS tally; shows officer reset).
+- [ ] `SUBMISSION_CHECKLIST.md` refresh to final artifact list.
+- [ ] Package `SUBMISSION/` by regeneration, not copy; verify (Ctrl+F5) on a clean browser profile before recording.
+
+---
+
+## Phase 6 — (Optional / Future Work, NOT this course) Real Backend
+
+Do not implement for this submission — document as Future Work in the report.
+
+- [ ] SQLite/Express (or Flask) voter roll + signed server-side sessions.
+- [ ] Write-only ballot endpoint with server-side duplicate prevention keyed on hashed EPIC.
+- [ ] Append-only audit log on server; VVPAT-style printed/signed tally receipt.
+- [ ] Map to production EVM requirements (EVM certification, paper trail, external audits) in report.
+
+---
+
+## Summary
+
+| Status | Meaning |
+|---|---|
+| Phase 1 | Blocks integrity of report/submission |
+| Phase 2 | Blocks a working single checkout |
+| Phase 3 | Blocks confidence against regressions |
+| Phase 4 | Blocks usability/demo quality |
+| Phase 5 | Blocks submission |
+| Phase 6 | Explicitly out of scope |
+
+**Honest scope statement:** this is a course simulation, not an EVM; nothing here certifies or enables real elections.

@@ -1,0 +1,44 @@
+# ═══════════════════════════════════════════════════════════
+# DVM-900 — gitignore (secrets + build artifacts + machine state)
+# ═══════════════════════════════════════════════════════════
+
+# Secrets & credentials
+.env
+.venv/
+.venv_*/
+dvm_key.key
+db/.env
+
+# Machine state (runtime-generated, may contain sensitive data)
+votes_data.json
+audit_log.json
+uploaded_documents/
+*.tmp
+
+# Node / Vite
+node_modules/
+dist/
+.vite/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+tests/__pycache__/
+
+# Logs & scratch
+pip-log.txt
+install*.log
+*.log
+.test_results_python.txt
+test_results_python.txt
+
+# OS / editor junk
+Thumbs.db
+.DS_Store
+.vscode/
+.idea/
+
+# Local npm/pip caches (machine-specific)
+.npm-cache/
+.pip-cache/
