@@ -89,14 +89,14 @@ Notes:
 
 ---
 
-## Phase 6 — (Optional / Future Work, NOT this course) Real Backend
+## Phase 6 — (Optional) Real Backend ✅ COMPLETE (2026-11-15)
 
-Do not implement for this submission — document as Future Work in the report.
-
-- [ ] SQLite/Express (or Flask) voter roll + signed server-side sessions.
-- [ ] Write-only ballot endpoint with server-side duplicate prevention keyed on hashed EPIC.
-- [ ] Append-only audit log on server; VVPAT-style printed/signed tally receipt.
-- [ ] Map to production EVM requirements (EVM certification, paper trail, external audits) in report.
+- [x] `server/dvm_server.py` — stdlib-only Python backend (http.server + sqlite3, zero-install on D: venv). Endpoints: `GET /api/health`, `GET /api/tally`, `GET /api/audit`, `GET /` (demo page), `POST /api/vote`, `POST /api/reset` (officer reset).
+- [x] EPIC enforcement server-side: format check (6–12 chars regex) + SHA-256 of `DVM-VOTER\x00`+epic; one vote per EPIC persisted to `votes.db` (unique PK); duplicates return HTTP `409 DUPLICATE_EPIC`; per-vote hash-chained audit log + `verify_chain()` tamper check.
+- [x] `server/demo.html` — minimal kiosk UI: voter enters `EPIC-000001`, votes, sees live tally + audit tail, can re-verify audit chain; officer reset button.
+- [x] `server/test_server.py` — 8 unittest smoke cases: health, empty tally, epic format rejected, unknown candidate rejected, first vote accepted, **duplicate rejected server-side**, tally counts, audit chain intact. **All 8 PASS**.
+- [x] Regenerated `SUBMISSION/` to include `server/` (dvm_server.py, demo.html, test_server.py) + report §8.2 and README updated with run instructions / honest limits.
+- [ ] Voter roll / multi-kiosk sync / VVPAT — explicitly out of scope (Future Enhancement per report §8.2).
 
 ---
 

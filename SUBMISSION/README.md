@@ -10,6 +10,31 @@ A software simulation of an electronic voting machine implemented twice:
 
 ---
 
+## Optional Demo Backend (`server/` — Phase 6, 2026-11-15)
+
+A thin, stdlib-only Python backend demonstrating **server-side** duplicate prevention — the gap client-localStorage can't close.
+
+```bash
+# 1. Start (uses the D: venv Python, no pip installs needed)
+D:\DE Digital voting Machine\.venv\Scripts\python.exe server\dvm_server.py
+
+# 2. Open the demo kiosk
+#    http://127.0.0.1:5000
+
+# 3. Run the backend smoke tests (8 cases)
+D:\DE Digital voting Machine\.venv\Scripts\python.exe server\test_server.py
+```
+
+What's here:
+- `dvm_server.py` — stdlib `http.server` + `sqlite3` backend. Endpoints: `GET /api/tally`, `GET /api/audit`, `GET /api/health`, `POST /api/vote`, `POST /api/reset`. EPIC enforced server-side (6–12 chars regex + SHA-256 of `DVM-VOTER\x00`+epic). One vote per EPIC — server-side, so bypassing the web UI doesn't matter. Hash-chained audit log (`seq` + `prev` + SHA-256).
+- `demo.html` — minimal kiosk page: cast a vote (`EPIC-000001` → SLOT 02), watch the tally update live, see the audit tail, re-verify the chain, officer reset.
+- `test_server.py` — 8 unittest cases: health, empty tally, EPIC format rejected, unknown candidate rejected, first vote accepted, **duplicate rejected server-side** (`409 DUPLICATE_EPIC`), tally counts, audit chain intact.
+- `votes.db` — created on first run (delete to reset; also git-ignored).
+
+**Honest limits:** single-kiosk scope; no voter roll (EPIC format check only); signing key `.backend_key` lives next to the DB; still not a certified EVM. The web and Tkinter apps remain 100% client-side and do not call this backend — it's a demonstration of the next step, not the shipping architecture.
+
+---
+
 ## Project Structure
 
 ```

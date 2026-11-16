@@ -1387,7 +1387,7 @@ The implementation satisfies the coursework objectives of digital electronics an
 | **Voter Authentication** | Implement voter ID + OTP or smart-card verification before enabling READY-state voting. |
 | **VVPAT Support** | Add a printer module to emit a voter-verified paper audit trail for each cast vote. |
 | **Cryptographic End-to-End Verifiability** | Implement homomorphic encryption or commitment schemes so voters can verify their vote was counted without revealing their choice. |
-| **Multi-Kiosk Sync** | Introduce a backend server to synchronize sessions across multiple machines and prevent double-voting across kiosks. |
+| **Multi-Kiosk Sync** | Introduce a backend server to synchronize sessions across multiple machines and prevent double-voting across kiosks. **DEMO IMPLEMENTED (Phase 6 2026-11-15)** — `server/dvm_server.py` — a stdlib-only Flask-free SQLite backend with hash-chained audit + server-side EPIC dedup, plus `server/demo.html` test-voter UI. This is a demo, not a production EVM: single-kiosk, no voter roll, key-at-rest next to data. See README "Optional Demo Backend". |
 | ~~PIN Change Mechanism~~ | **IMPLEMENTED (Phase 1)** — "Change PIN (Officer)" button re-authenticates, validates 4–8 digits, persists. |
 | ~~JSON Integrity Protection~~ | **IMPLEMENTED (Phase 1)** — AES-256-GCM tag on `votes_data.json` + SHA-256 hash-chained audit log. |
 | ~~Voter Authentication~~ | **IMPLEMENTED (Phase 1)** — EPIC/voter ID verified at ballot open; one ID per ballot; IDs stored SHA-256-hashed; duplicates rejected. |

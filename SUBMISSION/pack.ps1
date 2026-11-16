@@ -14,6 +14,10 @@ Copy-Item -Force "$root\DVM_Project_Report.md","$root\README.md","$root\TODO_LIS
 
 # Python implementation
 Copy-Item -Force "$root\python_tkinter\digital_voting_machine.py" "$dst\python_tkinter\digital_voting_machine.py"
+if (Test-Path "$root\server") {
+  New-Item -ItemType Directory -Force "$dst\server" | Out-Null
+  Copy-Item -Force "$root\server\dvm_server.py","$root\server\demo.html","$root\server\test_server.py" "$dst\server\"
+}
 
 # Tests
 Copy-Item -Force "$root\tests\test_python.py" "$dst\tests\test_python.py"

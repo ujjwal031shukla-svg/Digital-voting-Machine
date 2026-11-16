@@ -42,3 +42,7 @@ Thumbs.db
 # Local npm/pip caches (machine-specific)
 .npm-cache/
 .pip-cache/
+
+# Demo backend runtime state
+server/votes.db
+server/.backend_key
