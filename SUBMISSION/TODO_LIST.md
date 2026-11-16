@@ -84,7 +84,7 @@ Notes:
 - [x] `SUBMISSION_CHECKLIST.md` rewritten: artifact list matches current state (11/11 tests, phases 1–4 done, honest limitations listed, leaked DB credential + fake "MySQL verified" claim removed).
 - [x] Package `SUBMISSION/` regenerates via `pack.ps1` from root (idempotent, no hand-copies; contains fresh source + tests + docs).
 - [x] Dev server serves latest build (http://127.0.0.1:5173 returns 200; Ctrl+F5 to hard-refresh).
-- [ ] **Demo video + filename** — record per `DEMO_SCRIPT.md`; fill name + roll no. in report title page; name/date in `SUBMISSION_CHECKLIST.md` verification.
+- [ ] **Demo video + filename** — deferred, user will record/upload later per `DEMO_SCRIPT.md`; fill name + roll no. in report title page and filename in `SUBMISSION_CHECKLIST.md` before final submission.
 - [ ] `npm test` re-run on your machine (verify 11/11 before recording).
 
 ---

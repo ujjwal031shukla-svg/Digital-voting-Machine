@@ -23,12 +23,12 @@
 | **Core States** | IDLE, READY, VOTED, LOCKED, RESULT |
 | **Status** | Academic coursework simulation — **not for real elections** |
 
-**Prepared by:** [Student Name]  
-**Student ID:** [Roll Number]  
-**Supervisor:** [Faculty Name]  
-**Department:** Electronics & Communication Engineering / Computer Science Engineering  
-**Institution:** [University/College Name]  
-**Date:** [Submission Date]  
+**Prepared by:** [Ansh Shukla, Ishan Srivastav, Vidushi Srivastava , Jiya Verma, Anjani Shani, Avanish Verma, Gaurav Sharma, Pratibha verma]  
+**Student ID:** [202510101150017, 202510101150013, 202510101150016, 202510101150003, 202510101150028, 202510101150040, 202510101150020, 202510101150048]  
+**Supervisor:** [Dr. Rashmita]  
+**Department:** Digital Electronic 
+**Institution:** [SRMU]  
+**Date:** [20/11/2026]  
 
 *Note: Replace all bracketed fields above with your actual details before submission.*
 
