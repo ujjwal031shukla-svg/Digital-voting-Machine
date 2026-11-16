@@ -78,11 +78,14 @@ Notes:
 
 ---
 
-## Phase 5 — Demo & Submission
+## Phase 5 — Demo & Submission ✅ COMPLETE (2026-11-15) — video recording pending (your action)
 
-- [ ] Demo video + script (officer arms ballot; voter verifies EPIC + uploads ID; casts; shows RESULTS tally; shows officer reset).
-- [ ] `SUBMISSION_CHECKLIST.md` refresh to final artifact list.
-- [ ] Package `SUBMISSION/` by regeneration, not copy; verify (Ctrl+F5) on a clean browser profile before recording.
+- [x] `DEMO_SCRIPT.md` rewritten (6-scene walkthrough: landing → officer arm → EPIC+doc gate → cast → seal → tally → audit tail) with explicit "not-to-claim" section for demo narration.
+- [x] `SUBMISSION_CHECKLIST.md` rewritten: artifact list matches current state (11/11 tests, phases 1–4 done, honest limitations listed, leaked DB credential + fake "MySQL verified" claim removed).
+- [x] Package `SUBMISSION/` regenerates via `pack.ps1` from root (idempotent, no hand-copies; contains fresh source + tests + docs).
+- [x] Dev server serves latest build (http://127.0.0.1:5173 returns 200; Ctrl+F5 to hard-refresh).
+- [ ] **Demo video + filename** — record per `DEMO_SCRIPT.md`; fill name + roll no. in report title page; name/date in `SUBMISSION_CHECKLIST.md` verification.
+- [ ] `npm test` re-run on your machine (verify 11/11 before recording).
 
 ---
 
