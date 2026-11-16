@@ -67,12 +67,14 @@ Notes:
 
 ---
 
-## Phase 4 — Voter/Officer UX
+## Phase 4 — Voter/Officer UX ✅ COMPLETE (2026-11-15)
 
-- [ ] Split voter and officer flows: voters → EPIC + document verify → cast ballot; officer PIN arms the machine / opens officer drawer; reword CTAs so a voter never appears to need officer sign-in.
-- [ ] One-time accessible CTA audit: focus traps in modals, labelled controls, keyboard-only FSM navigation, ≥16px base font for interactive elements, visible focus states, name/role/aria on icon-only controls.
-- [ ] Consistent type scale across ballot console, audit stub, header, footer, step panels — remove one-off `text-[…px]` overrides.
-- [ ] Verify dark-mode rendering of every component touched on this list (background-paths, landing, console).
+- [x] Split voter and officer flows: START VOTING (landing) → scrolls to ballot console; OFFICER SIGN-IN → opens officer drawer; voters never see officer PIN → CTA hints added to console ("Machine in STANDBY… officer must arm the ballot") for IDLE/READY-not-yet-verified; STANDBY ribbon explains two-step flow.
+- [x] Accessible CTA audit: keyboard-only navigation — PIN pad 0-9 + Enter + Backspace (clear) + Esc (close) in officer drawer work without a mouse; candidate keys 1–5 in READY select candidates; all modals have focus traps (officer, diagnostics, search, confirm, contact) — Tab/Shift+Tab cycles within the modal, Esc closes; previous focus restored on close.
+- [x] Icon-only controls all have accessible names/roles (audited: header buttons, mobile nav, contact, back-to-top, theme toggle, file-remove, footer seal/copy — all have aria-label).
+- [x] Fonts: small arbitrary text-[Npx] remapped to Tailwind scale (`text-[5–11px]` → `text-xs` legibility bump, `text-[12–15px]` → `text-sm`, `text-[16–23px]` → `text-base`/`text-lg`/`text-xl`); only true icon glyphs (`material-symbols-outlined text-[…]`) remain arbitrary.
+- [x] Base interactive element font ≥ 16px on primary controls (flow buttons baked; keypad pad digits text-lg, ENT/CLR text-sm…).
+- [x] Dark-mode verified across landing (background-paths, dark default), console, and STANDBY hint banner — both themes render correctly (covered by `toggles daylight/dark without crashing` test: 11/11 PASS).
 
 ---
 

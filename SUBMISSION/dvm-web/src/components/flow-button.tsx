@@ -24,7 +24,7 @@ export function FlowButton({
   ariaLabel?: string;
 }) {
   const pad =
-    size === 'sm' ? 'px-5 py-2.5 text-[13px] gap-1.5' :
+    size === 'sm' ? 'px-5 py-2.5 text-sm gap-1.5' :
     size === 'lg' ? 'px-9 py-4 text-lg gap-2.5' :
                     'px-8 py-3.5 text-base gap-2';
   const icon = size === 'sm' ? 'w-4 h-4' : size === 'lg' ? 'w-6 h-6' : 'w-5 h-5';

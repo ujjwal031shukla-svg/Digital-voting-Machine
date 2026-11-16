@@ -147,6 +147,22 @@ describe('DVM FSM — officer arm → voter flow', () => {
     expect(await screen.findByText(/Keypad locked/i)).toBeInTheDocument()
   })
 
+  it('arm ballot via keyboard only (officer PIN pad: digits + Enter)', async () => {
+    render(<App />)
+    openOfficerDrawer()
+    for (const d of PIN) fireEvent.keyDown(window, { key: d })
+    fireEvent.keyDown(window, { key: 'Enter' })
+    expect(await screen.findByText(/STATE 02/)).toBeInTheDocument()
+  })
+
+  it('toggles daylight/dark without crashing (landing still renders)', async () => {
+    render(<App />)
+    const toggle = screen.getByRole('button', { name: /daylight|dark room|dark mode|Switch to daylight|Switch to dark/i })
+    fireEvent.click(toggle)
+    fireEvent.click(toggle)
+    expect(screen.getByRole('main')).toBeTruthy()
+  })
+
   it('LOCKED → RESULT → IDLE via officer flow', async () => {
     render(<App />)
     await armReady()
