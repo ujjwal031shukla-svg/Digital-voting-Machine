@@ -1,115 +1,118 @@
 # DVM — Digital Voting Machine · To-Do List
 
-**Date written:** 2026-11-14
-**Status:** Fresh list — all previously tracked outstanding items deleted per user request.
-**Scope note:** This is an educational simulation, not a certified voting machine. Replace any wording implying otherwise with the disclaimer below.
+**Date written:** 2026-11-15 (rewritten from brutal-feedback review, 0 sugarcoating)
+**Status:** Phases 0–6 complete (honesty labels, repo hygiene, React tests, UX, demo packaging, demo backend).
 
-> Educational simulation — not for real elections.
-
----
-
-## Phase 1 — Honesty & Report Integrity ✅ COMPLETE (2026-11-14)
-
-- [x] Remove or re-caption security-theater strings with "Educational simulation — not for real elections":
-  - "FEDERAL ELECTIONS COMMISSION · SECURE BALLOT INTEGRITY ACCREDITED" → "DVM-900 COURSE SIMULATION · NOT FOR OFFICIAL ELECTIONS"
-  - "SERIAL DVM-88420-XF" → "SERIAL DVM-SIM-000"; "SEAL #8841-B" + copy button → "SEAL #SIM-000 (FICTIONAL)"
-  - "BAY 01/02 READY" → "SIM UNIT · BAY 01 READY"; "TAMPER OK" → "SIM: TAMPER OK"; "PRECINCT 14-B" → "PRECINCT 14-B (FICTIONAL)"
-  - "Solenoid 4.2N nominal", "Geneva flip-counter", "HSM-2", "SEALED", "CERTIFICATE #701-X" → all captioned as SIM (or deleted)
-  - Diagnostics boot log and self-test lines prefixed `[SIM BOOT]` / `[SIM TEST]` / `[SIM DONE]`
-  - "Hardware self-test complete" → "Simulated self-test complete"
-  - Stale `dvm-web\ssr-dist\ssr-entry.js` artifact (contained heavier theater: "Geneva flip-counters rotate one decade") → deleted
-- [x] Replace dvm-web `README.md` (was default Vite template) with real project README (setup/build/honesty).
-- [x] Root README rewritten: scope disclaimer up top, accurate features, accurate deps, honest scope.
-- [x] Report: "Security Limitations" consolidated in Section 6 (Residual Risks rewritten to current reality incl. document-upload file-identity-only limit and client-side enforcement); stale "no voter authentication" claim corrected.
-- [x] Known Issues + Assumptions sections retained (already present, K-3 updated context).
-- [x] Student placeholder fields — intentionally left as bracketed placeholders for the student to fill (not ours to invent).
-- [x] Sync report claims: title-page Status → "NOT for real elections"; report disclaimer banner added; "production-ready" removed (incl. Section 5 heading and embedded listing header); HOWTO_RUN/Appendix A wording kept honest; stale "plaintext JSON" note corrected to AES-GCM (with the key kept on the same device).
-- [x] Disclaimer visible in UI footer: "DVM-900 COURSE SIMULATION · NOT FOR OFFICIAL ELECTIONS"
+> This is an educational simulation of an EVM. It is not a voting machine, cannot be one, and must not pretend to be one.
+> Every claim in the code/docs must be either verifiable (one line of test you can run) or removed.
 
 ---
 
-## Phase 2 — Repo Hygiene ✅ COMPLETE (2026-11-14)
+## ✅ Completed (kept for the record — do not delete or re-open)
 
-- [x] Initial git commit (`7ff23e3` — 52 files; repo had zero commits).
-- [x] Root `.gitignore` extended: `.npm-cache/`, `.pip-cache/` (node_modules/, dist/, *.log, __pycache__/, .venv/ already covered).
-- [x] `SUBMISSION/` now regenerates from root via `SUBMISSION/pack.ps1` (never hand-edited); duplicates removed; `pack.ps1` made idempotent.
-- [x] Delete dead files: `cinematic-hero.tsx` (components/ + ui/), `cinematic-hero.bak.tsx`; removed `gsap` dep (+ stale node_modules copies: gsap, framer-motion stray, @tailwindcss, tailwindcss, autoprefixer, postcss).
-- [x] Remove stray logs: `jsdom.log`, `lucide.log`, `preview-build.log`, `uninstall.log`, `ssr-build.log`; deleted `start.bat` / `start-dev.bat`.
-- [x] Free C: drive — npm cache moved to `D:\DE Digital voting Machine\.npm-cache` via `dvm-web/.npmrc`; `npm install` + `npm run build` run out-of-the-box (verified `vite build` exit 0 on clean dep tree after `npm i`); removed corrupt node_modules tree; `npm run lint` = 0 errors (warnings only).
-- [x] Reconcile Tailwind: CDN (in use at runtime) chosen; build-time Tailwind v4 removed from devDeps; `@tailwindcss/vite` removed from vite.config; `@tailwind`/`@import "tailwindcss"` directives removed from index.css; documented in both READMEs.
-- [x] Decide `db/` — removed (dead pymysql code, no consumer); `db/schema.sql` report mapping item moot.
-- [x] Verify `.oxlintrc.json` passes — `npm run lint`: 0 errors.
-- [x] Report mapping for `db/schema.sql` if kept — N/A (db/ removed).
-- [x] SUBMISSION_CHECKLIST.md rewritten honestly (removed leaked DB credential and unverifiable "MySQL verified" claim; regenerated package has identical, fresh files).
+- Phase 1 — Honesty & Report Integrity (2026-11-14): disclaimers added everywhere; theater strings re-captioned; README/report rewritten.
+- Phase 2 — Repo Hygiene (2026-11-14): git init, dead files removed, SUBMISSION regenerates from root via `pack.ps1`, honest checklist.
+- Phase 3 — React Test Coverage (2026-11-15): 11/11 Vitest FSM smoke tests PASS (`npm test`).
+- Phase 4 — Voter/Officer UX (2026-11-15): CTAs split, keyboard FSM navigation, modal focus traps, type scale, dark/light verified.
+- Phase 5 — Demo & Submission (2026-11-15): DEMO_SCRIPT rewritten, checklist rewritten, package regenerates; video deferred by user.
+- Phase 6 — Demo Backend (2026-11-15): stdlib SQLite backend (server-side EPIC dedup, hash-chained audit, 8/8 smoke tests PASS).
 
 ---
 
-## Phase 3 — React Test Coverage ✅ COMPLETE (2026-11-15)
+## Phase 7 — Claim integrity (BLOCKS submission quality)
 
-- [x] Test runner: Vitest 2.x + Testing Library (`vitest.config.js`, `src/test/setup.js`; jsdom; canvas/matchMedia stubs for jsdom absence).
-- [x] `npm test` / `npm run test:watch` scripts in `dvm-web/package.json`.
-- [x] FSM smoke tests (`src/test/fsm.test.jsx`, 9 tests, **9/9 PASS** on `npm test`):
-  - IDLE → READY (officer PIN arm via officer drawer PIN pad)
-  - READY → VOTED (EPIC verify + ID document upload + candidate select + CAST VOTE)
-  - READY gate check: candidates disabled until ID verified
-  - Document gate: confirm stays disabled until ID doc accepted
-  - Double-vote blocked across remount (duplicate EPIC rejected)
-  - Tally persists across remount (1 recorded vote, WINNER shown in RESULT)
-  - Officer PIN 3-attempt → LOCKOUT ("KEYPAD LOCKED — 30S BACKOFF")
-  - Locked-out state survives remount (digits refused)
-  - LOCKED → RESULT (tally page) → IDLE (STANDBY reached)
-- [x] `vitest.config.js` standalone config (kept `vite.config.js` for the app; no shared plugin deps)
+Stop implying the app is more secure/verified than it is. Make every remaining claim testable or delete it.
 
-Notes:
-- Tests drive the real `App.tsx` with seeded AES-GCM storage; not mocks.
-- jsdom lacks `canvas`/`matchMedia` — stubbed in `src/test/setup.js`.
-- `testTimeout` raised to 30 s (monolith re-renders the whole app per interaction in jsdom).
+- [ ] Audit every "tamper-evident", "encrypted", "integrity", "secure", "verified", "sealed", "locked", "protected", "audit" phrase in code, README, report, UI strings.
+- [ ] For each occurrence: either add a one-line verifiable test/property, rename it to what it actually is ("obfuscation", "checksum", "client-side format check", "demo log"), or delete it.
+- [ ] Remove "tamper OK", "SHA-256 hash-chained audit", "AES-256-GCM encrypted at rest" phrasing from user-facing text; replace with exact, boring description ("bytes stored in browser localStorage; key stored next to them; swap the files and nothing notices").
+- [ ] Remove "PRECINCT 14-B (FICTIONAL)", "SIM UNIT · BAY 01 READY", "seal #SIM-000", `SERIAL DVM-SIM-000`, "REG", "Kiosk Terminal 04", "BAY 02 · BAY 01 READY" decoration in favour of a single honest line, e.g. "DVM-900 COURSE SIMULATION — NOT FOR OFFICIAL ELECTIONS".
+- [ ] No external accreditation icons, badges, seals, stamps, holograms anywhere — not even "FICTIONAL".
+- [ ] Add a one-paragraph "What this machine actually guarantees" to README, report, and the demo script — a plain-language honesty page.
 
 ---
 
-## Phase 4 — Voter/Officer UX ✅ COMPLETE (2026-11-15)
+## Phase 8 — One implementation only
 
-- [x] Split voter and officer flows: START VOTING (landing) → scrolls to ballot console; OFFICER SIGN-IN → opens officer drawer; voters never see officer PIN → CTA hints added to console ("Machine in STANDBY… officer must arm the ballot") for IDLE/READY-not-yet-verified; STANDBY ribbon explains two-step flow.
-- [x] Accessible CTA audit: keyboard-only navigation — PIN pad 0-9 + Enter + Backspace (clear) + Esc (close) in officer drawer work without a mouse; candidate keys 1–5 in READY select candidates; all modals have focus traps (officer, diagnostics, search, confirm, contact) — Tab/Shift+Tab cycles within the modal, Esc closes; previous focus restored on close.
-- [x] Icon-only controls all have accessible names/roles (audited: header buttons, mobile nav, contact, back-to-top, theme toggle, file-remove, footer seal/copy — all have aria-label).
-- [x] Fonts: small arbitrary text-[Npx] remapped to Tailwind scale (`text-[5–11px]` → `text-xs` legibility bump, `text-[12–15px]` → `text-sm`, `text-[16–23px]` → `text-base`/`text-lg`/`text-xl`); only true icon glyphs (`material-symbols-outlined text-[…]`) remain arbitrary.
-- [x] Base interactive element font ≥ 16px on primary controls (flow buttons baked; keypad pad digits text-lg, ENT/CLR text-sm…).
-- [x] Dark-mode verified across landing (background-paths, dark default), console, and STANDBY hint banner — both themes render correctly (covered by `toggles daylight/dark without crashing` test: 11/11 PASS).
+Two divergent codebases (Tkinter + React) both claim to be "the FSM". This will keep drifting; the Python twin already drifted.
 
----
-
-## Phase 5 — Demo & Submission ✅ COMPLETE (2026-11-15) — video recording pending (your action)
-
-- [x] `DEMO_SCRIPT.md` rewritten (6-scene walkthrough: landing → officer arm → EPIC+doc gate → cast → seal → tally → audit tail) with explicit "not-to-claim" section for demo narration.
-- [x] `SUBMISSION_CHECKLIST.md` rewritten: artifact list matches current state (11/11 tests, phases 1–4 done, honest limitations listed, leaked DB credential + fake "MySQL verified" claim removed).
-- [x] Package `SUBMISSION/` regenerates via `pack.ps1` from root (idempotent, no hand-copies; contains fresh source + tests + docs).
-- [x] Dev server serves latest build (http://127.0.0.1:5173 returns 200; Ctrl+F5 to hard-refresh).
-- [ ] **Demo video + filename** — deferred, user will record/upload later per `DEMO_SCRIPT.md`; fill name + roll no. in report title page and filename in `SUBMISSION_CHECKLIST.md` before final submission.
-- [ ] `npm test` re-run on your machine (verify 11/11 before recording).
+- [ ] Decide: ship web only, or Python only. Pick one. Delete the other or archive it untouched as "sprint-1 reference" with a clear README note.
+- [ ] Recommended: keep React app; move Tkinter version to an `archive/` folder with `NOT MAINTAINED` note; remove Tkinter claims from main README/report positioning.
+- [ ] Report must state clearly which implementation is the submission and what role the other has.
 
 ---
 
-## Phase 6 — (Optional) Real Backend ✅ COMPLETE (2026-11-15)
+## Phase 9 — Honest internals (upgrade the demo to a C- version instead of a D+)
 
-- [x] `server/dvm_server.py` — stdlib-only Python backend (http.server + sqlite3, zero-install on D: venv). Endpoints: `GET /api/health`, `GET /api/tally`, `GET /api/audit`, `GET /` (demo page), `POST /api/vote`, `POST /api/reset` (officer reset).
-- [x] EPIC enforcement server-side: format check (6–12 chars regex) + SHA-256 of `DVM-VOTER\x00`+epic; one vote per EPIC persisted to `votes.db` (unique PK); duplicates return HTTP `409 DUPLICATE_EPIC`; per-vote hash-chained audit log + `verify_chain()` tamper check.
-- [x] `server/demo.html` — minimal kiosk UI: voter enters `EPIC-000001`, votes, sees live tally + audit tail, can re-verify audit chain; officer reset button.
-- [x] `server/test_server.py` — 8 unittest smoke cases: health, empty tally, epic format rejected, unknown candidate rejected, first vote accepted, **duplicate rejected server-side**, tally counts, audit chain intact. **All 8 PASS**.
-- [x] Regenerated `SUBMISSION/` to include `server/` (dvm_server.py, demo.html, test_server.py) + report §8.2 and README updated with run instructions / honest limits.
-- [ ] Voter roll / multi-kiosk sync / VVPAT — explicitly out of scope (Future Enhancement per report §8.2).
+Every existing "control" bypasses a single line in DevTools. Fix the two cheapest ones; leave the rest documented as honest-limit.
+
+- [ ] Replace "voter ID verified" with a proper demo: server issues a **signed HMAC receipt** per recorded ballot (server signs, client displays, server re-verifies on tally read). No external keys; demo key stays local.
+- [ ] Make the web audit log verify **on every boot** and refuse to display a tally if chain fails — not just an advisory toast; a hard block with "audit chain invalid — do not trust this tally".
+- [ ] Demo backend: write-only tally endpoint (public tally read; no voter identity visible per candidate, no voter list exposed).
+- [ ] Keep: format-only EPIC validation, dual-key lockout, idle auto-lock — these are UX guards, not election guarantees. Rename them correctly in docs.
+- [ ] Document every remaining bypass in §6 honestly (each: how to defeat it in one line, what it would take to fix, why we didn't).
+
+---
+
+## Phase 10 — Real small experiment (optional, high value)
+
+Gives the report a real data point instead of fiction.
+
+- [ ] With permission of 10+ real people (family/class/colleagues), run one real "mock election" through the web app in their presence.
+- [ ] Record (anonymized): how many understood the STANDBY ribbon, how many found EPIC/upload flow confusing, how many cast correctly, how many got stuck.
+- [ ] Add findings to report as "Preliminary usability observation (n=…, …)" — do not overstate.
+- [ ] Discard the votes. Only the behavioral notes survive.
+
+---
+
+## Phase 11 — CI (cheap, high credibility)
+
+- [ ] Add `.github/workflows/ci.yml` (or equivalent): on push → Python: `python tests/test_python.py`; web: `npm ci`, `npm test`, `npm run build`, `npm run lint`.
+- [ ] Report CI status badge or at least state in README/checklist that tests re-run on every push.
+- [ ] Submission checklist references CI run id/date.
+
+---
+
+## Phase 12 — Report upgrade (makes it a good submission, not just an honest one)
+
+- [ ] Replace every "19/19 PASS" / "11/11 PASS" claim in the report with **actual captured output** pasted in a fenced block (rerun tests, copy output).
+- [ ] Add section "How to rerun everything" (single command block per suite + expected output).
+- [ ] Add "Known failure modes" section: each concrete thing that broke during development, what I changed, what still breaks (e.g., jsdom act() warnings, Tailwind removed-then-restored, `.npmrc`, C: drive full, EFSM CRASHES in this project's history, officer PIN lost on refresh edge cases).
+- [ ] Fill student fields (Name, Roll No., Faculty, College, Date) by yourself before submission.
+- [ ] Title page: remove anything implying institutional/government approval.
+- [ ] Submission size: includes report + demo video + code; confirm total size fits your portal's limit.
+
+---
+
+## Phase 13 — Cleanup hygiene (cheap housekeeping, still open)
+
+- [ ] `.gitignore` sanity: `dist/`, `.npm-cache/`, `.pip-cache/`, `node_modules/`, `__pycache__/`, `.venv/`, `votes.db`, `.backend_key`, `*.log` — all ignored; verify with `git status --ignored`.
+- [ ] Remove root-level `__pycache__` if any tracked; remove `.npm-cache/`, `.pip-cache/` from disk if large.
+- [ ] Free C: drive space before recording (ENOSPC bit us multiple times during demo recording setup).
+- [ ] Commit everything, then `Ctrl+F5` on a clean browser profile against `dist/` build (not dev server) to verify submission build.
+
+---
+
+## Explicitly NOT doing (list to stop scope creep)
+
+- No blockchain. No VVPAT printer. No "tamper-proof", "unhackable", "secure" language anywhere.
+- No real voter roll acquisition. No "real election" anywhere including private phrasing.
+- No new UI framework, no visual rewrite, no animation polish beyond what's there.
+- No claiming certification, standards, or accreditation from any body.
 
 ---
 
 ## Summary
 
-| Status | Meaning |
-|---|---|
-| Phase 1 | Blocks integrity of report/submission |
-| Phase 2 | Blocks a working single checkout |
-| Phase 3 | Blocks confidence against regressions |
-| Phase 4 | Blocks usability/demo quality |
-| Phase 5 | Blocks submission |
-| Phase 6 | Explicitly out of scope |
+| Priority | Item | Status |
+|---|---|---|
+| 🔴 7 | Claim integrity (verifiable or delete) | OPEN — blocking submission quality |
+| 🟠 8 | Pick one implementation, archive the other | OPEN |
+| 🟠 9 | HMAC receipt + hard tally block on chain failure + write-only tally endpoint | OPEN |
+| 🟡 10 | Real 10-person usability observation | OPEN (optional, high value) |
+| 🟡 11 | CI workflow | OPEN |
+| 🔴 12 | Report honesty upgrade (actual outputs, failure modes) | OPEN |
+| 🟢 13 | Hygiene (gitignore verify, disk cleanup, Ctrl+F5 on dist) | OPEN |
+| ✅ 1–6 | Earlier phases (honesty labels, repo, tests, UX, demo, backend) | DONE |
 
-**Honest scope statement:** this is a course simulation, not an EVM; nothing here certifies or enables real elections.
-
+**Honest scope statement:** this is a course simulation, not an EVM; nothing here certifies or enables real elections. That sentence is the project — keep it in the footer, README, report, and demo script, always.
