@@ -1,1 +1,1 @@
-# Didital-voting-Machine
+# Digital-voting-Machine
