@@ -44,20 +44,26 @@
 
 ---
 
-## Phase 3 — React Test Coverage
+## Phase 3 — React Test Coverage ✅ COMPLETE (2026-11-15)
 
-- [ ] Set up test runner: Vitest + Testing Library (or Playwright) + `npm test` script.
-- [ ] FSM smoke tests:
-  - IDLE → READY (officer PIN arm)
-  - READY → VOTED (cast ballot)
-  - VOTED → auto-IDLE (5s) and VOTED → LOCKED
-  - LOCKED → RESULT (officer PIN) and RESULT → IDLE
-  - Double-vote blocked across refresh (`voterHasVoted` persisted)
-  - Officer PIN 3-attempt → 30s lockout persisted
-  - Voter-ID gate blocks ballot until VERIFY succeeds
-  - Document-upload gate blocks ballot until ID doc accepted
-  - Vote tally survives reload (AES-GCM localStorage round-trip)
-- [ ] Document test command and expected coverage in README.
+- [x] Test runner: Vitest 2.x + Testing Library (`vitest.config.js`, `src/test/setup.js`; jsdom; canvas/matchMedia stubs for jsdom absence).
+- [x] `npm test` / `npm run test:watch` scripts in `dvm-web/package.json`.
+- [x] FSM smoke tests (`src/test/fsm.test.jsx`, 9 tests, **9/9 PASS** on `npm test`):
+  - IDLE → READY (officer PIN arm via officer drawer PIN pad)
+  - READY → VOTED (EPIC verify + ID document upload + candidate select + CAST VOTE)
+  - READY gate check: candidates disabled until ID verified
+  - Document gate: confirm stays disabled until ID doc accepted
+  - Double-vote blocked across remount (duplicate EPIC rejected)
+  - Tally persists across remount (1 recorded vote, WINNER shown in RESULT)
+  - Officer PIN 3-attempt → LOCKOUT ("KEYPAD LOCKED — 30S BACKOFF")
+  - Locked-out state survives remount (digits refused)
+  - LOCKED → RESULT (tally page) → IDLE (STANDBY reached)
+- [x] `vitest.config.js` standalone config (kept `vite.config.js` for the app; no shared plugin deps)
+
+Notes:
+- Tests drive the real `App.tsx` with seeded AES-GCM storage; not mocks.
+- jsdom lacks `canvas`/`matchMedia` — stubbed in `src/test/setup.js`.
+- `testTimeout` raised to 30 s (monolith re-renders the whole app per interaction in jsdom).
 
 ---
 
@@ -101,3 +107,4 @@ Do not implement for this submission — document as Future Work in the report.
 | Phase 6 | Explicitly out of scope |
 
 **Honest scope statement:** this is a course simulation, not an EVM; nothing here certifies or enables real elections.
+

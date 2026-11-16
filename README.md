@@ -77,13 +77,16 @@ python python_tkinter\digital_voting_machine.py
 - Node.js 18+, npm
 - Note: `C:` on this development machine is nearly full — if `npm install` fails with ENOSPC, point npm's cache at D: or free space on C:
 
-### Install / build / run (from `dvm-web/`)
+### Install / build / run / test (from `dvm-web/`)
 ```bash
 npm install
 npm run dev      # development server → http://127.0.0.1:5173
 npm run build    # production build → dvm-web/dist/
 npm run lint     # oxlint
+npm test         # vitest — FSM smoke tests (9 tests)
 ```
+
+Test coverage: officer arm → IDLE→READY, EPIC/doc gates, cast ballot, duplicate-voter rejection across remount, tally persistence across remount, 3-attempt PIN lockout (+ reload persistence), LOCKED→RESULT→IDLE flow.
 
 ### Features (all demonstration-only)
 - 5-state FSM driven screens: IDLE (landing), READY, VOTED, LOCKED, RESULT, plus OFFICER drawer and DIAGNOSTICS

@@ -12,6 +12,7 @@ npm install
 npm run dev     # http://127.0.0.1:5173
 npm run build   # production build → dist/
 npm run lint    # oxlint
+npm test        # vitest — FSM smoke tests (9 tests)
 ```
 
 If `npm install` fails with `ENOSPC`, the C: drive on this machine is full — free space or point the npm cache at D: (`--cache "D:\path\to\cache"`).

@@ -1,9 +1,7 @@
 /* ═══════════════════════════════════════════════════════════
    DVM-900 — paper civic design system
+   Tailwind is provided at RUNTIME via CDN in index.html — no build-time pipeline needed.
    ═══════════════════════════════════════════════════════════ */
-
-@import "tailwindcss";
-@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   --ink: #1e1b17;
