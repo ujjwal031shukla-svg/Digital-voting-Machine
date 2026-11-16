@@ -11,7 +11,7 @@ import tempfile
 import shutil
 
 # Add project path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "python_tkinter"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "archive", "python_tkinter_sprint1"))
 
 # Test results
 results = []

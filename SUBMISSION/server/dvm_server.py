@@ -216,10 +216,12 @@ class Handler(BaseHTTPRequestHandler):
                     (h, doc_hash or sha256(secrets.token_bytes(16)), cand_id,
                      datetime.datetime.utcnow().replace(microsecond=0).isoformat() + "Z"),
                 )
-                log_event(conn, "VOTE_ACCEPTED", f"candidate={cand_id} hash={h[:12]}")
+                receipt_payload = f"{h[:16]}|{cand_id}|{conn.execute('SELECT ts FROM votes WHERE epic_hash=?', (h,)).fetchone()[0]}".encode()
+                receipt = hmac.new(KEY, receipt_payload, hashlib.sha256).hexdigest()[:24]
+                log_event(conn, "VOTE_ACCEPTED", f"candidate={cand_id} hash={h[:12]} receipt={receipt}")
                 conn.commit()
                 conn.close()
-                self._send(201, {"ok": True, "receipt": sha256(h.encode() + KEY)[:16]}); return
+                self._send(201, {"ok": True, "receipt": receipt}); return
             except sqlite3.IntegrityError:
                 log_event(conn, "VOTE_DUPLICATE", f"hash={h[:12]}")
                 conn.commit()

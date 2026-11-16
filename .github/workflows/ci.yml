@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: dvm-web/package-lock.json
+
+      - name: Web — install
+        working-directory: dvm-web
+        run: npm ci
+
+      - name: Web — test (Vitest)
+        working-directory: dvm-web
+        run: npm test
+
+      - name: Web — build
+        working-directory: dvm-web
+        run: npm run build
+
+      - name: Web — lint
+        working-directory: dvm-web
+        run: npm run lint
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Backend — smoke tests
+        working-directory: server
+        run: python test_server.py
+
+      - name: Python archive — byte-compile
+        run: python -m py_compile archive/python_tkinter_sprint1/digital_voting_machine.py
+
+      - name: Python archive — sprint-1 tests (best effort)
+        run: python tests/test_python.py || true

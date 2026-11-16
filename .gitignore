@@ -46,3 +46,9 @@ Thumbs.db
 # Demo backend runtime state
 server/votes.db
 server/.backend_key
+
+# Tooling temp dirs
+.tmp/
+
+# Build artifacts
+dist/

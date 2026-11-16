@@ -108,7 +108,7 @@ const STATES = { IDLE: 'IDLE', READY: 'READY', VOTED: 'VOTED', LOCKED: 'LOCKED',
 const STATE_META: Record<string, { num: string; label: string; sub: string; led: 'green' | 'amber' | 'red' | 'blue' }> = {
   [STATES.IDLE]:   { num: '01', label: 'STANDBY',  sub: 'Clutch disengaged. Officer must arm voter session.', led: 'red'   },
   [STATES.READY]:  { num: '02', label: 'READY',    sub: 'Plunger keys energized. One vote only.',            led: 'green' },
-  [STATES.VOTED]:  { num: '03', label: 'VOTED',    sub: 'Indelible stamp applied. Slip severing into hopper.', led: 'amber' },
+  [STATES.VOTED]:  { num: '03', label: 'VOTED',    sub: 'Vote recorded; slip printed to hopper (simulated).', led: 'amber' },
   [STATES.LOCKED]: { num: '04', label: 'LOCKED',   sub: 'Steel shutter engaged. Physical interlock active.',   led: 'red'   },
   [STATES.RESULT]: { num: '05', label: 'TALLY',    sub: 'Simulated flip-counter inspection � officer only.',      led: 'blue'  },
 };
@@ -131,6 +131,7 @@ export default function App() {
   const [totalVoters, setTotalVoters] = useState(0);
   const [voterHasVoted, setVoterHasVoted] = useState(false);
   const [auditLog, setAuditLog] = useState<any[]>([]);
+  const [auditTampered, setAuditTampered] = useState(false);
   const [voterId, setVoterId] = useState('');
   const [voterIdVerified, setVoterIdVerified] = useState(false);
   const [voterIdError, setVoterIdError] = useState('');
@@ -343,7 +344,7 @@ export default function App() {
     const name = contactName.trim(), email = contactEmail.trim(), message = contactMessage.trim();
     const hasAttachment = contactAttachment !== null;
     if (name.length < 2) { setContactStatus('error'); setContactError('Please enter your full name (min. 2 characters).'); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { setContactStatus('error'); setContactError('Enter a valid email address (e.g. officer@precinct04a.gov).'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { setContactStatus('error'); setContactError('Enter a valid email address (e.g. officer@example.com).'); return; }
     if (!hasAttachment && message.length < 10) { setContactStatus('error'); setContactError('Type a message (min. 10 characters) or attach a document.'); return; }
     if (hasAttachment) {
       const entry = { name: contactAttachment.name, size: contactAttachment.size, at: new Date().toISOString() };
@@ -367,7 +368,7 @@ export default function App() {
     { label: 'Ballot console â€” cast a vote', keywords: 'ballot vote cast console candidates elena vance', run: () => scrollToId('ballot-console') },
     { label: '01 / 02 READY â€” arm the ballot (Officer PIN)', keywords: 'ready arm pin officer ballot 01 02', run: () => { setScreenTo(STATES.READY); } },
     { label: '02 / 03 VOTED â€” VVPAT paper audit', keywords: 'voted vvpat audit paper slip 02 03', run: () => goTo(STATES.VOTED) },
-    { label: '03 / 04 LOCKED â€” sealed election interlock', keywords: 'locked sealed interlock emergency 03 04', run: () => goTo(STATES.LOCKED) },
+    { label: '03 / 04 LOCKED â€” demo close screen', keywords: 'locked sealed interlock emergency 03 04', run: () => goTo(STATES.LOCKED) },
     { label: '04 Officer drawer â€” PIN authentication register', keywords: 'officer drawer pin register 04 admin', run: () => setOfficerOpen(true) },
     { label: '05 Results � flip-counter tally (simulated)', keywords: 'results tally votes counting flip 05', run: () => goTo(STATES.RESULT) },
     { label: '06 Hardware diagnostics â€” calibration bus', keywords: 'diagnostics calibration self test solenoid 06', run: () => setDiagOpen(true) },
@@ -452,8 +453,9 @@ export default function App() {
           if (e.chain !== head) { ok = false; break; }
         }
         if (!ok) {
+          setAuditTampered(true);
           pushAudit('AUDIT_CHAIN_TAMPERED');
-          notify('Audit chain verification FAILED â€” log may have been edited');
+          notify('Audit chain FAILED — do not trust this tally');
         }
       }
       setAuditLog(logArr);
@@ -685,7 +687,7 @@ export default function App() {
           </span>
           <span className="flex flex-col text-left">
             <span className="font-serif-civic font-bold text-headline-sm leading-none text-on-surface">DVM-900</span>
-            <span className="font-mono-civic text-xs md:text-xs uppercase tracking-widest text-on-surface-variant mt-1">Precinct 42A · Poll 07</span>
+            <span className="font-mono-civic text-xs md:text-xs uppercase tracking-widest text-on-surface-variant mt-1">Course Simulation Console</span>
           </span>
         </button>
 
@@ -711,7 +713,7 @@ export default function App() {
         <div className="flex items-center gap-3">
           <div className="text-right hidden sm:flex flex-col">
             <span className="font-mono-civic font-bold text-xs text-on-surface leading-none tabular-nums">{clock}</span>
-            <span className="font-mono-civic text-xs uppercase text-on-surface-variant mt-0.5">Kiosk Terminal 04</span>
+            <span className="font-mono-civic text-xs uppercase text-on-surface-variant mt-0.5">Classroom demo</span>
           </div>
           <button
             onClick={() => setOfficerOpen(true)}
@@ -736,8 +738,8 @@ export default function App() {
         <span className="hidden sm:inline opacity-70">{STATE_META[state].sub}</span>
       </span>
       <span className="flex items-center gap-3 shrink-0">
-        <span className="hidden md:inline">PRECINCT 14-B (FICTIONAL)</span>
-        <span className="flex items-center gap-1 text-secondary font-bold"><span className="material-symbols-outlined text-xs">verified_user</span>SIM: TAMPER OK</span>
+        <span className="hidden md:inline">NOT FOR OFFICIAL ELECTIONS</span>
+        <span className="flex items-center gap-1 text-secondary font-bold"><span className="material-symbols-outlined text-xs">verified_user</span>DEMO</span>
       </span>
     </div>
   );
@@ -747,10 +749,10 @@ export default function App() {
       <div className="max-w-7xl mx-auto px-4 md:px-8 h-12 flex items-center justify-between gap-3 font-mono-civic text-xs md:text-xs uppercase tracking-wider text-on-surface-variant">
         <span className="truncate">DVM-900 COURSE SIMULATION � NOT FOR OFFICIAL ELECTIONS</span>
         <span className="flex items-center gap-3 shrink-0">
-          <span className="hidden sm:inline">SERIAL DVM-SIM-000</span>
+          <span className="hidden sm:inline">DEMO UNIT</span>
           <span className="flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-secondary" />
-            SEAL #SIM-000 (FICTIONAL)
+            demo: no real seal
           </span>
           <button onClick={() => window.print()} className="flex items-center gap-1 hover:text-primary transition-colors"><span className="material-symbols-outlined text-xs align-[-2px]">print</span>PRINT</button>
         </span>
@@ -796,7 +798,7 @@ export default function App() {
               <div className="flex items-center justify-between px-4 md:px-6 py-3 border-b-2 border-on-surface/15 bg-surface-container">
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="w-3 h-3 rounded-full bg-primary animate-blink shrink-0" />
-                  <span className="font-serif-civic font-bold text-xl md:text-2xl text-on-surface truncate">DVM-900 SECURE APPARATUS</span>
+                  <span className="font-serif-civic font-bold text-xl md:text-2xl text-on-surface truncate">DVM-900 CLASSROOM DEMO</span>
                 </div>
                 <span className="font-mono-civic text-xs md:text-sm uppercase bg-tertiary-fixed text-on-tertiary-fixed px-2 py-1 rounded-sm shadow-[2px_2px_0px_#1e1b17] font-bold shrink-0">SIM UNIT � BAY 01 READY</span>
               </div>
@@ -845,8 +847,8 @@ export default function App() {
                           className="field w-44 md:w-60"
                         />
                         <FlowButton size="md" text="VERIFY" onClick={verifyVoterId} />
-                      </div>
-                    )}
+                </div>
+                      )}
                     {voterIdError && <div role="alert" className="font-mono-civic text-sm md:text-base text-error uppercase mt-2">{voterIdError}</div>}
 
                     {/* STEP 1b � Voter ID document upload (required, one document = one vote) */}
@@ -877,8 +879,8 @@ export default function App() {
                               <span className="w-1.5 h-1.5 rounded-full bg-outline" />
                               <span className="flex-1 mx-2 border-t border-dashed border-outline" />
                               <span className="w-1.5 h-1.5 rounded-full bg-outline" />
-                            </div>
-                          )}
+                </div>
+                            )}
                           <button
                             role="radio" aria-checked={isSel} disabled={disabled} onClick={() => selectCandidate(c.id)}
                             className={`w-full text-left rounded-sm border-2 p-2 md:p-3 flex items-center justify-between gap-2 md:gap-4 transition-all duration-150 ${
@@ -912,26 +914,26 @@ export default function App() {
                 <aside className="lg:col-span-4 flex flex-col gap-3">
                   <div className="border-2 border-on-surface rounded-sm bg-surface-container px-4 py-3">
                     <div className="flex items-center justify-between border-b border-dashed border-on-surface/30 pb-2">
-                      <span className="font-mono-civic text-xs md:text-sm font-bold uppercase text-on-surface">OFFICIAL AUDIT STUB</span>
+                      <span className="font-mono-civic text-xs md:text-sm font-bold uppercase text-on-surface">DEMO AUDIT STUB</span>
                       <span className="material-symbols-outlined text-secondary text-lg">verified</span>
                     </div>
                     <p className="font-mono-civic text-sm md:text-base text-on-surface-variant mt-2 uppercase">RECORDED SELECTION:</p>
                     <p className="font-serif-civic font-bold text-lg md:text-2xl text-on-surface">{selectedId !== null ? CANDIDATES.find(c => c.id === selectedId)?.name : 'PENDING VOTER INPUT'}</p>
                     <p className="font-mono-civic text-xs md:text-xs text-primary font-bold uppercase">{selectedId !== null ? CANDIDATES.find(c => c.id === selectedId)?.party : 'AWAITING STAMP'}</p>
                     <div className="mt-3 flex flex-col gap-1 font-mono-civic text-xs md:text-xs text-on-surface-variant">
-                      <div className="flex justify-between"><span>KIOSK POSITION:</span><span className="font-bold text-on-surface">BOOTH 07-E</span></div>
-                      <div className="flex justify-between"><span>INTEGRITY CHECK:</span><span className="font-bold text-secondary">OK (100%)</span></div>
-                      <div className="flex justify-between"><span>LEDGER HASH:</span><span className="font-bold text-on-surface">0xA841..FD2</span></div>
+                      <div className="flex justify-between"><span>DEMO POSITION:</span><span className="font-bold text-on-surface">TABLE-03</span></div>
+                      <div className="flex justify-between"><span>CHECK:</span><span className="font-bold text-secondary">n/a (demo)</span></div>
+                      <div className="flex justify-between"><span>LOG DIGEST:</span><span className="font-bold text-on-surface">(client-side)</span></div>
                     </div>
                     <div className="mt-3 bg-surface-container-high p-2 rounded-sm flex items-center gap-2 font-mono-civic text-xs md:text-xs text-on-surface-variant">
-                      <span className="material-symbols-outlined text-primary text-lg">lock</span> Demo audit stub � selection is encrypted (AES-GCM) only in this browser's localStorage.
+                      <span className="material-symbols-outlined text-primary text-lg">lock</span> Selection recorded (demo) only in this browser's localStorage.
                     </div>
                   </div>
 
                   <div className="border border-dashed border-on-surface/40 rounded-sm p-3 text-center">
                     <span className="material-symbols-outlined text-[44px] text-secondary">shield</span>
-                    <p className="font-mono-civic text-xs md:text-xs font-bold uppercase text-on-surface">Board of Elections</p>
-                    <p className="font-sans text-xs md:text-xs text-on-surface-variant">Official ballot chit verified under state civic compliance rules.</p>
+                    <p className="font-mono-civic text-xs md:text-xs font-bold uppercase text-on-surface">Classroom Demo</p>
+                    <p className="font-sans text-xs md:text-xs text-on-surface-variant">Demo chit for the classroom prototype.</p>
                   </div>
                 </aside>
               </div>
@@ -962,14 +964,14 @@ export default function App() {
         {state === STATES.LOCKED && (
           <section className="relative px-4 md:px-8 py-8">
             <div className="max-w-2xl mx-auto text-center border-2 border-on-surface rounded-xl bg-surface-container shadow-[4px_4px_0px_#1e1b17] p-6 md:p-8">
-              <span className="inline-flex items-center gap-2 bg-error-container text-on-error-container px-3 py-1 rounded-sm font-mono-civic text-xs md:text-xs uppercase font-bold"><span className="material-symbols-outlined text-sm">lock</span>STATE 04 � SEALED (SIM)</span>
+              <span className="inline-flex items-center gap-2 bg-error-container text-on-error-container px-3 py-1 rounded-sm font-mono-civic text-xs md:text-xs uppercase font-bold"><span className="material-symbols-outlined text-sm">lock</span>STATE 04 · CLOSED (demo)</span>
               <div className="w-28 h-28 md:w-32 md:h-32 mx-auto rounded-full border-4 border-double border-primary flex flex-col items-center justify-center my-5">
                 <span className="material-symbols-outlined text-primary text-[44px] md:text-[52px]">lock</span>
-                <span className="font-mono-civic text-xs md:text-xs font-bold text-primary uppercase tracking-widest">SIM-VAR</span>
+                <span className="font-mono-civic text-xs md:text-xs font-bold text-primary uppercase tracking-widest">PAUSED</span>
               </div>
-              <h1 className="font-serif-civic font-bold text-3xl md:text-4xl text-on-surface">Election closed.<br />Terminal sealed.</h1>
-              <p className="font-sans text-xs md:text-sm text-on-surface-variant max-w-md mx-auto mt-2 leading-relaxed">All simulated ballot keys are disabled and the demo hopper is marked sealed. In the real world, an election official � not a webpage � reopens and audits a machine. This is a course prototype.</p>
-              <div className="mt-5"><FlowButton size="md" text="OFFICER SIGN-IN TO UNSEAL" onClick={() => setOfficerOpen(true)} /></div>
+              <h1 className="font-serif-civic font-bold text-3xl md:text-4xl text-on-surface">Voting closed.<br />Run paused.</h1>
+              <p className="font-sans text-xs md:text-sm text-on-surface-variant max-w-md mx-auto mt-2 leading-relaxed">All simulated ballot keys are disabled. In the real world, an election official — not a webpage — pauses polling. This is a course prototype.</p>
+              <div className="mt-5"><FlowButton size="md" text="OFFICER SIGN-IN TO REOPEN" onClick={() => setOfficerOpen(true)} /></div>
             </div>
           </section>
         )}
@@ -978,8 +980,18 @@ export default function App() {
         {state === STATES.RESULT && (
           <section className="relative px-4 md:px-8 py-8">
             <div className="max-w-4xl mx-auto border-2 border-on-surface rounded-xl bg-surface-container-low shadow-[4px_4px_0px_#1e1b17] overflow-hidden">
+              {auditTampered ? (
+                <div className="p-6">
+                  <div className="bg-error-container text-on-error-container px-4 py-5 rounded-sm border-l-4 border-error">
+                    <h2 className="font-serif-civic font-bold text-xl md:text-2xl uppercase tracking-tight">Audit chain FAILED</h2>
+                    <p className="font-sans text-sm md:text-base mt-3">Local tally and audit log do not match the hash chain. Do not trust the numbers on this screen. An election officer must reset this demo before the next session.</p>
+                    <p className="font-mono-civic text-xs uppercase mt-4 opacity-80">CODE: AUDIT_CHAIN_TAMPERED</p>
+                  </div>
+                </div>
+              ) : (
+              <>
               <div className="bg-surface-container-high px-5 py-3 border-b-2 border-on-surface/15 flex items-center justify-between gap-2">
-                <span className="font-serif-civic font-bold text-base md:text-xl text-on-surface">OFFICIAL SPOOL // PRECINCT 04-A</span>
+                <span className="font-serif-civic font-bold text-base md:text-xl text-on-surface">DEMO SPOOL // CLASSROOM</span>
                 <span className="font-mono-civic text-xs md:text-xs uppercase text-on-surface-variant">POLLS CLOSED · FINAL</span>
               </div>
               <div className="p-5 md:p-6">
@@ -1009,12 +1021,14 @@ export default function App() {
                 </div>
                 <div className="flex flex-wrap gap-2 mt-4">
                   <FlowButton size="sm" text="PRINT PAPER TAPE" onClick={() => setPrintClicked(!printClicked)} />
-                  <FlowButton size="sm" text="SEAL AUDIT HOPPER (SIM)" onClick={() => confirmThen('Seal the audit hopper?', 'Demo only: the simulated audit tape will be marked finalized. No real machine, tape or board exists in this prototype.', 'SEAL HOPPER', () => setSealClicked(true))} />
-                  <FlowButton size="sm" text="COPY TALLY" onClick={() => copyText(`DVM-900 TALLY · ${LAST_UPDATED} · PRECINCT 04-A\nTotal ballots: ${totalVoters}\n${CANDIDATES.map(c => `${c.code} ${c.name}: ${candidateVotes[c.id] ?? 0}`).join('\n')}`, 'Tally copied')} />
+                  <FlowButton size="sm" text="CLOSE AUDIT LOG (demo)" onClick={() => confirmThen('Delete the demo audit log?', 'Demo only: marks the demo tape done. Nothing official exists.', 'CLOSE & LOG', () => setSealClicked(true))} />
+                  <FlowButton size="sm" text="COPY TALLY" onClick={() => copyText(`DVM-900 TALLY · ${LAST_UPDATED} · DEMO\nTotal ballots: ${totalVoters}\n${CANDIDATES.map(c => `${c.code} ${c.name}: ${candidateVotes[c.id] ?? 0}`).join('\n')}`, 'Tally copied')} />
                 </div>
-                {sealClicked && <p className="font-mono-civic text-xs text-secondary font-bold uppercase mt-2">SIM AUDIT HOPPER SEALED � NO REAL CERTIFICATE ISSUED</p>}
+                {sealClicked && <p className="font-mono-civic text-xs text-secondary font-bold uppercase mt-2">DEMO LOG CLOSED — nothing official was sealed</p>}
                 <div className="mt-3"><FlowButton size="md" text="RETURN TO TERMINAL STANDBY" onClick={resetToIdle} className="w-full justify-center" /></div>
               </div>
+              </>
+              )}
             </div>
           </section>
         )}
@@ -1097,20 +1111,20 @@ export default function App() {
                   <div className="flex items-center gap-2 mb-2"><span className="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center font-mono-civic text-xs font-bold">1</span><h3 className="font-serif-civic font-bold text-base md:text-xl text-on-surface">Open ballot</h3></div>
                   <p className="font-sans text-xs md:text-xs text-on-surface-variant max-w-md">Authorize and issue one single-use encrypted ballot sheet for the next waiting voter.</p>
                   <div className="mt-3"><FlowButton size="md" text="RELEASE NEXT BALLOT" onClick={submitPin} className="w-full justify-center font-extrabold" /></div>
-                  <p className="font-mono-civic text-xs md:text-xs text-on-surface-variant text-center mt-1.5 uppercase">Dispatches auth code to Kiosk Screen 04 · Indelible</p>
+                  <p className="font-mono-civic text-xs md:text-xs text-on-surface-variant text-center mt-1.5 uppercase">Issues a demo ballot sheet · </p>
                 </div>
 
                 {/* Op 2 — Close election */}
                 <div className="border-2 border-on-surface rounded-sm bg-surface-container p-4 md:p-5 shadow-[4px_4px_0px_#000]">
                   <div className="flex items-center gap-2 mb-2"><span className="w-6 h-6 rounded-full bg-on-surface text-surface flex items-center justify-center font-mono-civic text-xs font-bold">2</span><h3 className="font-serif-civic font-bold text-base md:text-xl text-on-surface">Close election</h3></div>
-                  <p className="font-sans text-xs md:text-xs text-on-surface-variant max-w-md">Demo only: stops voting in this simulation and marks the fictional vault sealed.</p>
-                  <div className="mt-3"><FlowButton size="md" text="SEAL TERMINAL &amp; CLOSE" onClick={() => confirmThen('Seal the election?', 'Demo only: voting is disabled in this simulation. Nothing is mechanically sealed anywhere � this is a course prototype.', 'SEAL & LOCK', () => { goTo(STATES.LOCKED); setOfficerOpen(false); notify('Simulated election closed and sealed'); })} className="w-full justify-center font-extrabold text-error" /></div>
+                  <p className="font-sans text-xs md:text-xs text-on-surface-variant max-w-md">Demo only: disables voting in this simulation.</p>
+                  <div className="mt-3"><FlowButton size="md" text="CLOSE VOTING (demo)" onClick={() => confirmThen('Seal the election?', 'Demo only: voting is disabled in this simulation. Nothing is mechanically sealed anywhere � this is a course prototype.', 'SEAL & LOCK', () => { goTo(STATES.LOCKED); setOfficerOpen(false); notify('Simulated election closed and sealed'); })} className="w-full justify-center font-extrabold text-error" /></div>
                 </div>
 
                 {/* Op 3 — Results */}
                 <div className="border-2 border-on-surface rounded-sm bg-surface-container p-4 md:p-5 shadow-[4px_4px_0px_#000]">
                   <div className="flex items-center justify-between gap-2 mb-2"><div className="flex items-center gap-2"><span className="w-6 h-6 rounded-full bg-on-surface-variant text-surface flex items-center justify-center font-mono-civic text-xs font-bold">3</span><h3 className="font-serif-civic font-bold text-base md:text-xl text-on-surface">View results</h3></div><span className="font-mono-civic text-xs md:text-xs uppercase text-on-surface-variant bg-surface-variant px-2 py-0.5 rounded-sm">INTERLOCKED</span></div>
-                  <p className="font-sans text-xs md:text-xs text-on-surface-variant max-w-md">Generates, renders and prints the official precinct tally sheet and cryptographic audit report.</p>
+                  <p className="font-sans text-xs md:text-xs text-on-surface-variant max-w-md">Shows the classroom demo tally sheet (not official, not cryptographic).</p>
                   <div className="mt-3"><FlowButton size="md" text="OPEN TALLY &amp; AUDIT REGISTER" onClick={() => { goTo(STATES.RESULT); setOfficerOpen(false); }} className="w-full justify-center" /></div>
                 </div>
 
@@ -1224,7 +1238,7 @@ export default function App() {
           <tbody>{CANDIDATES.map(c => { const v = candidateVotes[c.id] ?? 0; return <tr key={c.id}><td>{c.code}</td><td>{c.name}</td><td>{v}</td><td>{totalVoters > 0 ? ((v / totalVoters) * 100).toFixed(1) + '%' : '0.0%'}</td></tr>; })}</tbody>
         </table>
         <p>Total ballots recorded: {totalVoters}</p>
-        <p>SHA-256 audit digest: 489f6d3c1e9b47a2f0d5c8e6b19a03f71c2d8e45b6a90713d5f2c8e0b1a4d69</p>
+        <p>checksum (demo, not verified)</p>
         <p>Simulated printout for the demo � no real hardware standard applies.</p>
       </div>
 
@@ -1252,14 +1266,14 @@ export default function App() {
         <div className="fixed inset-0 z-[56] flex items-end sm:items-center justify-center bg-on-surface/70 backdrop-blur-sm p-4" onClick={() => setContactOpen(false)} role="dialog" aria-modal="true" aria-label="Contact the election board" ref={contactDialogRef}>
           <div className="w-full max-w-md bg-surface-container-low border-2 border-on-surface rounded-sm shadow-[5px_5px_0px_#000] p-4" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-2 border-b-2 border-on-surface/15 pb-2">
-              <div className="flex items-center gap-2"><span className="material-symbols-outlined text-secondary">mark_email_read</span><span className="font-mono-civic text-xs font-bold uppercase text-on-surface">Precinct Inbox · 04-A</span></div>
+              <div className="flex items-center gap-2"><span className="material-symbols-outlined text-secondary">mark_email_read</span><span className="font-mono-civic text-xs font-bold uppercase text-on-surface">Demo Inbox</span></div>
               <button onClick={() => setContactOpen(false)} aria-label="Close contact form" className="w-9 h-9 rounded-sm bg-surface-container-high flex items-center justify-center"><span className="material-symbols-outlined text-base">close</span></button>
             </div>
             {contactStatus === 'success' ? (
               <div className="flex flex-col items-center text-center py-6 gap-2">
                 <span className="material-symbols-outlined text-[56px] text-secondary">task_alt</span>
                 <h4 className="font-serif-civic font-bold text-lg text-on-surface">Message logged.</h4>
-                <p className="font-sans text-xs text-on-surface-variant">Appended to the precinct register. An election official will review it at the next audit session.</p>
+                <p className="font-sans text-xs text-on-surface-variant">Sent to the course demo inbox. Nobody real will review it.</p>
                 <div className="mt-2"><FlowButton size="md" text="DONE" onClick={() => setContactOpen(false)} /></div>
               </div>
             ) : (
@@ -1267,7 +1281,7 @@ export default function App() {
                 <label className="font-mono-civic text-xs uppercase text-on-surface-variant" htmlFor="contact-name">Full name</label>
                 <input id="contact-name" value={contactName} onChange={e => setContactName(e.target.value)} className="field mt-0.5 mb-2" placeholder="Jordan Reyes" autoComplete="name" />
                 <label className="font-mono-civic text-xs uppercase text-on-surface-variant" htmlFor="contact-email">Email</label>
-                <input id="contact-email" type="email" value={contactEmail} onChange={e => setContactEmail(e.target.value)} className="field mt-0.5 mb-2" placeholder="officer@precinct04a.gov" autoComplete="email" />
+                <input id="contact-email" type="email" value={contactEmail} onChange={e => setContactEmail(e.target.value)} className="field mt-0.5 mb-2" placeholder="officer@example.com" autoComplete="email" />
                 <label className="font-mono-civic text-xs uppercase text-on-surface-variant" htmlFor="contact-message">Message</label>
                 <textarea id="contact-message" value={contactMessage} onChange={e => setContactMessage(e.target.value)} rows={3} className="field mt-0.5" placeholder="What should the board know about this terminal? (or attach a document below)" />
                 {/* Attachment � manual text OR document upload, both supported */}
@@ -1290,7 +1304,7 @@ export default function App() {
                     <span className="font-sans text-xs text-on-error-container">{contactError}</span>
                   </div>
                 )}
-                <div className="mt-3"><FlowButton size="md" text="SEND TO PRECINCT INBOX" type="submit" className="w-full justify-center" /></div>
+                <div className="mt-3"><FlowButton size="md" text="SEND TO DEMO INBOX" type="submit" className="w-full justify-center" /></div>
               </form>
             )}
           </div>

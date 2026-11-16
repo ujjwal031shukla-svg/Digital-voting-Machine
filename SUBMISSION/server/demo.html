@@ -46,6 +46,7 @@
       <button id="vote">VOTE (SLOT 02)</button>
     </div>
     <p id="voteResult" class="note" style="display:none"></p>
+    <p id="receiptBox" class="note" style="display:none; font-size:.8rem; word-break:break-all"></p>
     <p><small>Demo: one EPIC = one vote, enforced <em>server-side</em>. Try `EPIC-000001` twice.</small></p>
   </div>
 
@@ -89,7 +90,7 @@ $('#vote').addEventListener('click', async () => {
   if (!/^[A-Z0-9\-]{6,12}$/.test(epic)) { log('#voteResult', 'Invalid EPIC: 6–12 letters, digits, hyphens.', 'err'); return; }
   const r = await fetch('/api/vote', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ epic, candidate_id: 2 }) });
   const d = await r.json();
-  if (r.ok) log('#voteResult', `Vote recorded (receipt ${d.receipt}…). One person, one ballot.`, 'ok');
+  if (r.ok) { log('#voteResult', `Vote recorded (receipt ${d.receipt}…). One person, one ballot.`, 'ok'); $('#receiptBox').style.display='block'; $('#receiptBox').textContent = 'Receipt: ' + d.receipt; }
   else log('#voteResult', d.error + ' — this EPIC has already voted (server-side).', 'err');
   refreshTally(); refreshAudit();
 });

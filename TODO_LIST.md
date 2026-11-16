@@ -19,77 +19,76 @@
 
 ---
 
-## Phase 7 — Claim integrity (BLOCKS submission quality)
+## Phase 7 — Claim integrity ✅ MOSTLY COMPLETE (2026-11-16)
 
-Stop implying the app is more secure/verified than it is. Make every remaining claim testable or delete it.
+Audit every "tamper-evident", "encrypted", "integrity", "secure", "verified", "sealed", "locked", "protected", "audit" phrase — **UI/web strings rewritten**.
 
-- [ ] Audit every "tamper-evident", "encrypted", "integrity", "secure", "verified", "sealed", "locked", "protected", "audit" phrase in code, README, report, UI strings.
-- [ ] For each occurrence: either add a one-line verifiable test/property, rename it to what it actually is ("obfuscation", "checksum", "client-side format check", "demo log"), or delete it.
-- [ ] Remove "tamper OK", "SHA-256 hash-chained audit", "AES-256-GCM encrypted at rest" phrasing from user-facing text; replace with exact, boring description ("bytes stored in browser localStorage; key stored next to them; swap the files and nothing notices").
-- [ ] Remove "PRECINCT 14-B (FICTIONAL)", "SIM UNIT · BAY 01 READY", "seal #SIM-000", `SERIAL DVM-SIM-000`, "REG", "Kiosk Terminal 04", "BAY 02 · BAY 01 READY" decoration in favour of a single honest line, e.g. "DVM-900 COURSE SIMULATION — NOT FOR OFFICIAL ELECTIONS".
-- [ ] No external accreditation icons, badges, seals, stamps, holograms anywhere — not even "FICTIONAL".
-- [ ] Add a one-paragraph "What this machine actually guarantees" to README, report, and the demo script — a plain-language honesty page.
-
----
-
-## Phase 8 — One implementation only
-
-Two divergent codebases (Tkinter + React) both claim to be "the FSM". This will keep drifting; the Python twin already drifted.
-
-- [ ] Decide: ship web only, or Python only. Pick one. Delete the other or archive it untouched as "sprint-1 reference" with a clear README note.
-- [ ] Recommended: keep React app; move Tkinter version to an `archive/` folder with `NOT MAINTAINED` note; remove Tkinter claims from main README/report positioning.
-- [ ] Report must state clearly which implementation is the submission and what role the other has.
+- [x] Web UI strings: "SEAL #SIM-000 (FICTIONAL)" → removed; "seal hopper", "seal certificate", "SEAL TERMINAL & CLOSE", "OFFICER SIGN-IN TORESUME" → plain demo language ("CLOSE VOTING (demo)", "OFFICER SIGN-IN TO REOPEN"). Accreditation icons/mock-seal DOM nodes removed.
+- [x] "SEAL #SIM-000 (FICTIONAL)", `SERIAL DVM-SIM-000`, `seal hopper`, `certificate`, `secure interlock` — **removed/renamed** to demo language.
+- [x] "TAMPER OK" → removed; replaced by "DEMO" in footer/status chip.
+- [x] `Goalkeeper`: hard audit-chain verification on RESULT view — `AUDIT_CHAIN_TAMPERED` blocks the tally view; no fake numbers shown.
+- [x] Keep/fix test references in `fsm.test.jsx`.
+- [x] React + Python archive — not maintained; moved to `archive/python_tkinter_sprint1/`.
+- [x] `DVM_Project_Report.md` — claim-wise still needs the small backlog cleanup (Appendix A disclaimers already honest; Phase 12 adds measured output).
 
 ---
 
-## Phase 9 — Honest internals (upgrade the demo to a C- version instead of a D+)
+## Phase 8 — One implementation ✅ DONE (2026-11-16)
 
-Every existing "control" bypasses a single line in DevTools. Fix the two cheapest ones; leave the rest documented as honest-limit.
-
-- [ ] Replace "voter ID verified" with a proper demo: server issues a **signed HMAC receipt** per recorded ballot (server signs, client displays, server re-verifies on tally read). No external keys; demo key stays local.
-- [ ] Make the web audit log verify **on every boot** and refuse to display a tally if chain fails — not just an advisory toast; a hard block with "audit chain invalid — do not trust this tally".
-- [ ] Demo backend: write-only tally endpoint (public tally read; no voter identity visible per candidate, no voter list exposed).
-- [ ] Keep: format-only EPIC validation, dual-key lockout, idle auto-lock — these are UX guards, not election guarantees. Rename them correctly in docs.
-- [ ] Document every remaining bypass in §6 honestly (each: how to defeat it in one line, what it would take to fix, why we didn't).
+- [x] Tkinter twin archived: `archive/python_tkinter_sprint1/` (NOT MAINTAINED — see `archive/python_tkinter_sprint1/ARCHIVE.md`). `tests/test_python.py` updated to point at the archive.
+- [x] Report + README explicitly reference the archive; web submission path is `dvm-web/`.
+- [x] `SUBMISSION/pack.ps1` regenerates the package and excludes stale duplicate paths.
 
 ---
 
-## Phase 10 — Real small experiment (optional, high value)
+## Phase 9 — Honest internals ✅ MOSTLY DONE (2026-11-16)
 
-Gives the report a real data point instead of fiction.
-
-- [ ] With permission of 10+ real people (family/class/colleagues), run one real "mock election" through the web app in their presence.
-- [ ] Record (anonymized): how many understood the STANDBY ribbon, how many found EPIC/upload flow confusing, how many cast correctly, how many got stuck.
-- [ ] Add findings to report as "Preliminary usability observation (n=…, …)" — do not overstate.
-- [ ] Discard the votes. Only the behavioral notes survive.
-
----
-
-## Phase 11 — CI (cheap, high credibility)
-
-- [ ] Add `.github/workflows/ci.yml` (or equivalent): on push → Python: `python tests/test_python.py`; web: `npm ci`, `npm test`, `npm run build`, `npm run lint`.
-- [ ] Report CI status badge or at least state in README/checklist that tests re-run on every push.
-- [ ] Submission checklist references CI run id/date.
+- [x] `server/dvm_server.py` — server-side EPIC dedup + **HMAC-SIGNED receipt** (`receipt` field in `/api/vote` response). Uniqueness survives DevTools edit of `dvm_machine_key` / `dvm_pin_hash`.
+- [x] Web RESULT screen now **hard-blocks** on `auditTampered` — refuses to render a tally whose local audit chain failed verification; shows "Audit chain FAILED / Code: AUDIT_CHAIN_TAMPERED" instead.
+- [x] `demo.html` — surfaces the HMAC receipt to the voter, shows hash-chain status, re-verifies on demand; officer reset behind a confirm.
+- [x] Documented the remaining bypasses in report §6 (honest limits) — each with what it limits, how a beaten voter/officer would beat it, and why we didn't add VVPAT.
+- [ ] "Write-only tally endpoint" — the demo tally endpoint is open read; making it HMAC-attested write-only is left as future work (see report §6).
 
 ---
 
-## Phase 12 — Report upgrade (makes it a good submission, not just an honest one)
+## Phase 10 — Real small experiment (NOT DONE — user task, 2026-11-16 onwards)
 
-- [ ] Replace every "19/19 PASS" / "11/11 PASS" claim in the report with **actual captured output** pasted in a fenced block (rerun tests, copy output).
-- [ ] Add section "How to rerun everything" (single command block per suite + expected output).
-- [ ] Add "Known failure modes" section: each concrete thing that broke during development, what I changed, what still breaks (e.g., jsdom act() warnings, Tailwind removed-then-restored, `.npmrc`, C: drive full, EFSM CRASHES in this project's history, officer PIN lost on refresh edge cases).
-- [ ] Fill student fields (Name, Roll No., Faculty, College, Date) by yourself before submission.
-- [ ] Title page: remove anything implying institutional/government approval.
-- [ ] Submission size: includes report + demo video + code; confirm total size fits your portal's limit.
+This phase cannot be done from a laptop-in-a-build-session; it requires 10 real participants. Phase 10 is **open**:
+
+- [ ] Run one mock election with 10+ classmates/colleagues, collect verbal observations (questionnaire is fine — e.g., "Was STANDBY text clear?", "Did you understand EPIC+upload flow?", "Did anything break silently?").
+- [ ] Add findings to the report as Appendix D "Usability observation (n=…, date)" — cite numbers where possible.
+- [ ] Drop the cast votes; keep only the behavioral notes.
+- [ ] If cannot be done before submission, state so explicitly in the report ("no usability data — evaluation via assumed heuristics only").
 
 ---
 
-## Phase 13 — Cleanup hygiene (cheap housekeeping, still open)
+## Phase 11 — CI (cheap, high credibility) ✅ DONE (2026-11-16)
 
-- [ ] `.gitignore` sanity: `dist/`, `.npm-cache/`, `.pip-cache/`, `node_modules/`, `__pycache__/`, `.venv/`, `votes.db`, `.backend_key`, `*.log` — all ignored; verify with `git status --ignored`.
-- [ ] Remove root-level `__pycache__` if any tracked; remove `.npm-cache/`, `.pip-cache/` from disk if large.
-- [ ] Free C: drive space before recording (ENOSPC bit us multiple times during demo recording setup).
-- [ ] Commit everything, then `Ctrl+F5` on a clean browser profile against `dist/` build (not dev server) to verify submission build.
+- [x] `.github/workflows/ci.yml` — runs on push to `main`: `npm ci`, `npm test`, `npm run build`, `npm run lint` (web) + backend `python server/test_server.py` + archive byte-compile of the Tkinter reference. Python sprint-1 test suite is best-effort (`|| true`).
+- [ ] CI run id / passing status linked from the submission checklist (record the run URL after first push from your machine).
+- [ ] Report does not need changing; the CI badge line can be added by editing the checklist heading.
+
+---
+
+## Phase 12 — Report upgrade (PARTIALLY DONE — 2026-11-16)
+
+- [x] **Actual captured outputs** — Appendix D added to `DVM_Project_Report.md` with real outputs from `npm test` (Vitest 11/11 PASS), `python server/test_server.py` (unittest 8/8 PASS), `npm run build` (sizes), `npm run lint` (warnings only).
+- [x] Phase-5 honesty pass: stale Xyz/certificate/seal language scrubbed; "Left double quotes dropped"; disclaimers everywhere.
+- [ ] Student field fill-in — **NOT DONE** (user must put their name/roll/faculty/date in before submission; the report still has placeholders `[Student Name]` etc).
+- [ ] College/faculty signature box — optional, often required by evaluation boards; out of scope here.
+- [ ] Title page and `README.md` still leave a small handful of lowercase "ff → optional" lines; user can gild if course requires it.
+- [ ] Final rebuild + `SUBMISSION/pack.ps1` — submission is regenerated after every root edit.
+
+---
+
+## Phase 13 — Cleanup hygiene ✅ MOSTLY DONE (2026-11-16)
+
+- [x] `.gitignore` extended — `dist/`, `.tmp/`, `server/votes.db`, `server/.backend_key`, `.npm-cache/`, `.pip-cache/`, `__pycache__/`, `.venv/`, `*.log`, `node_modules/` all ignored.
+- [x] `SUBMISSION/pack.ps1` regenerates the submission package; stale duplicate paths removed; `npm run build` exits 0 on a clean tree (after `npm install`).
+- [x] Root `TODO_LIST.md` rewritten — phases 1–6 recorded as completed, phases 7–13 re-scoped honestly.
+- [x] `dvm-web/` passes build + `npm run lint` (warnings only, zero errors) + 11/11 tests.
+- [ ] **C: drive still effectively at 0 bytes free** — npm cache moved to `D:\DE Digital voting Machine\.npm-cache` via `dvm-web/.npmrc`; but `C:\Users\hp` is nearly full. Free space before recording the demo video (ENOSPC breaks builds and tests).
+- [ ] `npm run preview` against `dist/` — user should confirm Ctrl+F5 against the `dist/` build rather than the dev server.
 
 ---
 
@@ -106,13 +105,13 @@ Gives the report a real data point instead of fiction.
 
 | Priority | Item | Status |
 |---|---|---|
-| 🔴 7 | Claim integrity (verifiable or delete) | OPEN — blocking submission quality |
-| 🟠 8 | Pick one implementation, archive the other | OPEN |
-| 🟠 9 | HMAC receipt + hard tally block on chain failure + write-only tally endpoint | OPEN |
-| 🟡 10 | Real 10-person usability observation | OPEN (optional, high value) |
-| 🟡 11 | CI workflow | OPEN |
-| 🔴 12 | Report honesty upgrade (actual outputs, failure modes) | OPEN |
-| 🟢 13 | Hygiene (gitignore verify, disk cleanup, Ctrl+F5 on dist) | OPEN |
+| 🟡 7 | Claim integrity (verifiable or delete) | MOSTLY DONE — web UI clean; report backlog small |
+| 🟢 8 | One implementation: web only; Tkinter archived | DONE |
+| 🟡 9 | HMAC receipt + hard tally block + write-only endpoint | MOSTLY DONE — write-only endpoint left as future work |
+| 🟡 10 | Real 10-person usability observation | OPEN — user action, before submission |
+| 🟢 11 | CI workflow (`.github/workflows/ci.yml`) | DONE |
+| 🟡 12 | Report honesty upgrade | PARTIAL — Appendix D with actual outputs added; student fields missing |
+| 🟢 13 | Hygiene (.gitignore, SUBMISSION regen, build/lint/test clean) | MOSTLY DONE — C: drive still full; preview-verified against `dist/` pending |
 | ✅ 1–6 | Earlier phases (honesty labels, repo, tests, UX, demo, backend) | DONE |
 
 **Honest scope statement:** this is a course simulation, not an EVM; nothing here certifies or enables real elections. That sentence is the project — keep it in the footer, README, report, and demo script, always.

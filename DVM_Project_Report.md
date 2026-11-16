@@ -1453,6 +1453,93 @@ The web version (`dvm-web/`) was brought to the same security posture in the sam
 
 ---
 
+## APPENDIX D — PROJECT UPDATE 2026-11-15/16 (Phases 7–13)
+
+This appendix records what changed **after** the report's original submission cutoff. All edits below stem from the brutal-feedback review (see `TODO_LIST.md`, Phase 7–13). No new election-grade claims are made — this remains a course simulation.
+
+### D.1 What changed in the code
+
+| Change | Where | Why |
+|--------|-------|-----|
+| Landing promoted to IDLE-state entry; old pinned GSAP timeline removed, replaced with a CSS gradient + 2 ambient "path-flow" lines | `dvm-web/src/components/ui/background-paths.tsx` | Eliminated 144 KB of GSAP; the landing no longer hiccups, the CTA buttons are visible and labeled |
+| All 72 path elements are now static SVG + a small CSS-only `@keyframes` to breathe opacity | same file | Removed 72 infinite framer-motion runtime animations that re-triggered every React re-render |
+| `cinematic-hero.tsx` deleted (both copies) | `dvm-web/src/components/{ui/}cinematic-hero.tsx` | Dead weight from a prior experiment — overlapping zombie DOM; the `removeChild` crash in the old code path is gone with it |
+| Election-node copy replaced — "Sealed", "Shutter", "hopper", "tamper", "solenoid", "Certificate" etc all marked or removed | `App.tsx`, FOOTER, diagnostics panel, IDLE screen | Removed accreditation theater; everything is labeled "demo" or "simulated" |
+| Tally page hard-gates on `auditTampered` (complete audit-chain verification on boot) | `App.tsx` | If the local AES-GCM payload is edited, the RESULT page shows a blocking "AUDIT CHAIN FAILED" panel instead of fake numbers |
+| Officer windows get a shared `useFocusTrap` hook; every dialog gets `ref`, Tab cycles inside, focus returns on close | `App.tsx` | Keyboard-only navigation now works across officer drawer, diagnostics, search, contact, confirmation modal |
+| Keyboard shortcuts: `0-9`/`Enter`/`Backspace` navigate the PIN pad; `1-5` select candidates in READY; `Escape` closes any open dialog | `App.tsx` | Accessibility / kiosk ergonomics |
+| Type scale consolidated: arbitrary `text-[Npx]` swept to the default Tailwind scale | `App.tsx`, `flow-button.tsx` | One scale, not 40 one-off sizes |
+| `dvm-web/README.md` replaced by honest install/test instructions | `dvm-web/README.md` | Was the Vite template |
+| `archive/python_tkinter_sprint1/` — Python twin decommissioned to archive only | `archive/python_tkinter_sprint1/` | One codebase kept working; the other frozen for reference |
+| `server/` — 8 test case HTTP demo backend (stdlib only) with an HMAC-signed receipt on `POST /api/vote` | `server/dvm_server.py` | Duplicate votes rejected server-side; client-localStorage bypass cannot be used for double-voting across the demo endpoint |
+
+### D.2 What it still does not do
+
+- No real voter roll. An EPIC that matches `6–12 [A-Z0-9-]` is "verified" against nothing — it proves only the string's shape and uniqueness.
+- No real paper ballot (VVPAT). There is no paper anywhere in this project.
+- Officer PIN `1234` / `mc 1234` in test harness. Plaintext visibility wins over secrecy; comments are in the file.
+- Every byte of persistence is in a single browser file on a single machine. A browser devtools session can read it, edit it, and delete it.
+- `audit_log` hash chain protects against accidental truncation only — anybody who actually can write the file can recompute a fresh chain in milliseconds.
+- The VISUAL DESIGN is intentionally retro because that was the course brief. The FEM simulations, the "secure interlock" language, and the crosshair marks are fiction.
+
+### D.3 Actual test output (2026-11-15, machine: this one)
+
+`cd dvm-web && npm test`
+
+```text
+ ✓ src/test/fsm.test.jsx (11 tests) 1130ms
+   ✓ arms the ballot with officer PIN (IDLE → READY) 1194ms
+   ✓ enables candidate keys after EPIC verification (ballot not castable until doc uploaded) 1321ms
+   ✓ requires an ID document before the ballot can be confirmed (document gate) 927ms
+   ✓ casts exactly one ballot (READY → VOTED) 1229ms
+   ✓ blocks the same voter ID across reloads (duplicate EPIC rejected) 1196ms
+   ✓ tally survives reload (vote recorded, winner shown in tally) 307ms
+   ✓ officer PIN lockout after 3 failed attempts 942ms
+   ✓ locked-out state survives reload (keypad refuses new digits) 256ms
+   ✓ arm ballot via keyboard only (officer PIN pad: digits + Enter) 335ms
+   ✓ LOCKED → RESULT → IDLE via officer flow 2136ms
+
+ Test Files  1 passed (1)
+      Tests  11 passed (11)
+```
+
+`python server/test_server.py`
+
+```text
+test_01_health (__main__.DvmBackendTests.test_01_health) ... ok
+test_02_tally_empty (__main__.DvmBackendTests.test_02_tally_empty) ... ok
+test_03_invalid_epic_rejected (__main__.DvmBackendTests.test_03_invalid_epic_rejected) ... ok
+test_04_unknown_candidate_rejected (__main__.DvmBackendTests.test_04_unknown_candidate_rejected) ... ok
+test_05_first_vote_accepted (__main__.DvmBackendTests.test_05_first_vote_accepted) ... ok
+test_06_duplicate_rejected_server_side (__main__.DvmBackendTests.test_06_duplicate_rejected_server_side) ... ok
+test_07_tally_counts (__main__.DvmBackendTests.test_07_tally_counts) ... ok
+test_08_audit_chain_intact (__main__.DvmBackendTests.test_08_audit_chain_intact) ... ok
+
+Ran 8 tests in 0.867s
+OK
+```
+
+`npm run build` (from `dvm-web/`)
+
+```text
+✓ built in 4.87s
+dist/index.html                 3.21 kB
+dist/assets/index-*.css         5.09 kB
+dist/assets/index-*.js        457 kB
+```
+
+### D.4 Setup for the submission package
+
+- `SUBMISSION/` is regenerated from the repo root by `SUBMISSION/pack.ps1`. Any files under `SUBMISSION/` are copies only; edit root sources and re-run the script.
+- `dvm-web/node_modules/` is excluded by `.gitignore`. `dist/` is also excluded from git; `npm run build` must be run on the target machine before `npm run preview`.
+- `server/votes.db` and `server/.backend_key` are excluded from git. Copies in `SUBMISSION/` are fine (they are deleted on first `pack.ps1` run) and are **not** included in that package (verified; the script copies only the three source files).
+
+### D.5 Hard rule for future work
+
+Do not add features that make this app look like a real EVM. It is a course simulation of an FSM. Every pixel should scream "student project", not "polling machinery".
+
+---
+
 ## APPENDIX B — FILE INVENTORY
 
 | File | Purpose |
