@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="DVM-900 — an educational simulation of an electronic voting machine (5-state FSM: IDLE, READY, VOTED, LOCKED, RESULT). Not for real elections. Software-only demo: officer PIN, voter-ID check, browser-local encrypted storage, and hash-chained audit log — all demonstration-only." />
+    <meta name="theme-color" content="#fff8f3" />
+    <title>DVM-900 — Course Simulation (Not for Real Elections)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Work+Sans:wght@400..700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              surface: '#fff8f3', 'surface-container': '#f5ece5', 'surface-container-low': '#fbf2eb',
+              'surface-container-high': '#efe7e0', 'surface-container-highest': '#e9e1da', 'surface-dim': '#e1d9d2',
+              'surface-container-lowest': '#ffffff', 'surface-variant': '#e9e1da', 'background': '#fff8f3',
+              'on-surface': '#1e1b17', 'on-surface-variant': '#5b403b', 'on-background': '#1e1b17',
+              'primary': '#b51d04', 'primary-container': '#d9381e', 'on-primary': '#ffffff',
+              'on-primary-container': '#fffcff', 'primary-fixed': '#ffdad3', 'primary-fixed-dim': '#ffb4a6',
+              'secondary': '#2b676c', 'secondary-container': '#afeaef', 'on-secondary': '#ffffff',
+              'on-secondary-container': '#306b70', 'secondary-fixed': '#b2edf2',
+              'tertiary': '#6d5e00', 'tertiary-container': '#c3ab26', 'tertiary-fixed': '#fde25b',
+              'outline': '#907069', 'outline-variant': '#e4beb6',
+              'error': '#ba1a1a', 'error-container': '#ffdad6', 'on-error-container': '#93000a',
+            },
+            fontFamily: {
+              serif: ['Newsreader', 'serif'],
+              mono: ['"Space Mono"', 'monospace'],
+              sans: ['"Work Sans"', 'sans-serif'],
+            },
+            boxShadow: {
+              hard: '2px 2px 0px #1e1b17',
+              hardsm: '1px 1px 0px #1e1b17',
+              hardlg: '4px 4px 0px #1e1b17',
+            },
+          },
+        },
+      };
+    </script>
+    <style>html, body, #root { overflow-x: hidden; } body { margin: 0; } #root { min-height: 100vh; }</style>
+    <script type="module" crossorigin src="./assets/index-DbRTlFYN.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-B_sNraMZ.css">
+  </head>
+  <body class="bg-surface text-on-surface antialiased">
+    <div id="root"></div>
+  </body>
+</html>
